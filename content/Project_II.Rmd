@@ -1,0 +1,343 @@
+---
+title: "Linear Modeling"
+author: "Sarah Campbell"
+date: ''
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, message=FALSE, warning=FALSE, fig.width=8, tidy.opts=list(width.cutoff=60),tidy=TRUE)
+library(Stat2Data)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(MASS)
+library(lmtest)
+library(plotROC)
+library(glmnet)
+library(boot)
+library(sandwich)
+```
+
+*11/26/2019*
+
+# Modeling, Testing, and Predicting Hawk Data
+
+## 0. Introduction
+
+```{r exdata}
+data(Hawks)
+head(Hawks)
+```
+  
+  The Hawks dataset from the Stats2Data package includes several measurements taken on three species of hawks captured by Cornell College students at Lake McBride in Iowa. It is a modified version of the original dataset in that it only includes species that were observed at least ten times.There are 19 variables total in this dataset; the ones useful to my analysis include:
+  
+  - **Species**, hawk species coded as RT (Red-tailed hawk), CH (Cooper's hawk), or SS (Sharp-shinned hawk).
+  
+  - **Age**, hawk age range coded as A (adult) or I (immature).
+  
+  - **Sex**, the hawk's sex, M or F.
+  
+  - **Wing**, the wing length of the hawk in mm.
+  
+  - **Weight**, the weight of the hawk in grams.
+  
+  - **Culmen**, the upper beak length of the hawk in mm.
+  
+  - **Hallux**, the length of the hawk's killing talon in mm.
+  
+  - **Tail**, the length of the hawk's tail in mm, measured using a technique invented at the MacBride Raptor Center.
+  
+  - **StandardTail**, the length of the hawk's tail in mm, measured using standard protocol.
+  
+  - **Tarsus**, the length of one of the hawk's foot bones in mm.
+  
+  - **WingPitFat**, the amount of fat in the hawk's wing pit, estimated on a scale from 0-3.
+  
+  - **KeelFat**, the amount of fat on the hawk's breastbone, estimated on a scale from 0-4.
+  
+  - **Crop**, a binary variable describing the presence of food in the bird's crop (1=full, 0=empty).
+  
+  It is likely that several of these numeric variables co-vary, and are perhaps predictors of a hawk's species or age.
+  
+## 1. Hypothesis Testing
+
+  I am interested in determining whether the means any of my interesting numeric variables differ across species. I'll start by creating a modified version of the dataset that only includes species and continuous numeric variables and omits incomplete rows. The WingPitFat and KeelFat variables were omitted due to their high proportion of NA values.
+  
+```{r cleaning}
+Hawknums<-dplyr::select(Hawks,Species,Wing,Weight,Culmen,Hallux,Tail,StandardTail,Tarsus)
+Hawknums<-Hawknums%>%drop_na
+```
+
+  Now, I will run a MANOVA to identify which numeric variables harbor significant differences between species. Due to the size and scope of the dataset the assumption of randomness is likely met.
+
+```{r MANOVA_assumptions}
+ggplot(Hawknums, aes(x = Wing, y = Weight)) +
+ geom_point(alpha = .5) + geom_density_2d(h=500) + coord_fixed() + facet_wrap(~Species)
+ggplot(Hawknums, aes(x = Culmen, y = Hallux)) +
+ geom_point(alpha = .5) + geom_density_2d(h=20) + coord_fixed() + facet_wrap(~Species)
+covmats<-Hawknums%>%group_by(Species)%>%do(covs=cov(.[2:8]))
+for(i in 1:3){print(covmats$covs[i])}
+```  
+  
+  Bivariate plots comparing wing length/weight and culmen/hallux indicate that MANOVA assumptions are not met for all variables: the former depicts multicollinearity and the latter depicts extreme outliers in the dataset. Multivariate normality is also violated in the first plot, and covariance matricies show a lack of homogeneity. In spite of this, I will proceed with the analysis.
+  
+```{r MANOVA}
+Hawkman<-manova(cbind(Wing,Weight,Culmen,Hallux,Tail,StandardTail,Tarsus)~Species, data=Hawknums)
+summary(Hawkman)
+```  
+  
+The MANOVA indicates a mean difference in one of the tested variables; *Pillai Trace* = 1.41, *pseudo F*(14,134) = 23.1, *p* < 0.001.
+
+```{r ANOVA}
+summary.aov(Hawkman)
+1-(0.95)^8
+0.05/8
+```  
+
+  With a 33.7% chance of a Type I error, the bonferroni adjusted significance value was set to 0.006. Even with this adjustment ANOVAs suggested significant mean differences in wing length (*F*(2,72)=137.5), weight (*F*(2,72)=118.1), culmen length (*F*(2,72)=110.0), hallux length (*F*(2,72)=561.5), tail length (*F*(2,72)=96.63), standard tail length (*F*(2,72)=350.0), and tarsus length (*F*(2,72)=187.4) between species. *p*<0.001 for all comparisons.
+  
+```{r t.test}
+pairwise.t.test(Hawknums$Wing,Hawknums$Species,
+ p.adj="none")
+pairwise.t.test(Hawknums$Weight,Hawknums$Species,
+ p.adj="none")
+pairwise.t.test(Hawknums$Culmen,Hawknums$Species,
+ p.adj="none")
+pairwise.t.test(Hawknums$Hallux,Hawknums$Species,
+ p.adj="none")
+pairwise.t.test(Hawknums$Tail,Hawknums$Species,
+ p.adj="none")
+pairwise.t.test(Hawknums$StandardTail,Hawknums$Species,
+ p.adj="none")
+pairwise.t.test(Hawknums$Tarsus,Hawknums$Species,
+ p.adj="none")
+
+1-0.95^29
+0.05/29
+```  
+
+  With a 77.4% overall chance of a type I error, a bonferroni adjustment was made to the significance value, now 0.0017. Post-hoc pairwise t-tests indicated that sharp-shinned and red-tailed hawks differed significantly on all measures, cooper's and red-tailed hawks significantly differed on every measure except tail length, and cooper's and sharp-shinned hawks on every measure except weight.
+  
+  
+## 2. Randomization Test
+
+  I will now determine whether there is a significant mean difference in weight between male and female birds using a randomization test. Under the null hypothesis that there is no significant mean difference in weight between the two sexes, and the alternative hypothesis that such a significant mean difference does exist, I permute the data to create a sampling distribution of mean differences.
+
+```{r rand_test}
+Hawkrt<-dplyr::select(Hawks,Sex,Weight)
+Hawkrt<-Hawkrt%>%filter(Sex!="")%>%drop_na()
+Hawkrt%>%group_by(Sex)%>%summarize(mean(Weight))
+256.9882-173.5478
+rand_dist<-vector()
+for(i in 1:5000){
+new<-data.frame(weight=sample(Hawkrt$Weight),sex=Hawkrt$Sex)
+rand_dist[i]<-mean(new[new$sex=="F",]$weight)-
+ mean(new[new$sex=="M",]$weight)}
+mean(rand_dist>83.44)*2
+```
+
+ The probability of getting the true mean difference within this randomized dataset is 0, indicating that I can reject the null hypothesis.
+ 
+```{r rand_hist}
+{hist(rand_dist,main="",ylab="",xlim=c(-60,90)); abline(v = 83.44,col="red")}
+```
+ 
+   A histogram of the sampling distribution indicates that the true mean value is not within the range of the permuted dataset, confirming my conclusion.
+   
+## 3. Linear Regression Model
+
+To determine whether wing length can be predictd by tail length or age, I will employ a linear regression model.
+
+```{r glm}
+hawkmean<-Hawks%>%filter(!is.na(Wing),!is.na(Tail))%>%mutate(wing_c=Wing-mean(Wing,na.omit=T),tail_c=Tail-mean(Tail,na.omit=T))
+hawk_lm<-lm(wing_c~tail_c*Age,data=hawkmean)
+coeftest(hawk_lm)
+```
+
+At mean tail length, immature hawks have wings that are 9.69 mm shorter than those of adult hawks, on average. In adult hawks, for every 1 mm increase in tail length, there is an average 2.44 mm increase in wing length. The slope of tail length vs. wing length in immature hawks is 0.13 units smaller than the slope in adult hawks. 
+
+```{r glm_plot}
+newdat<-hawkmean
+newdat$Age<-rep("I",length(newdat$Age))
+newdat$pred1<-predict(hawk_lm,newdat)
+newdat$Age<-rep("A",length(newdat$Age))
+newdat$pred2<-predict(hawk_lm,newdat)
+
+ggplot(hawkmean, aes(x = tail_c, y = wing_c)) +
+    geom_point() + geom_line(data = newdat, aes(y = pred1),color='red') +
+    geom_line(data = newdat, aes(y = pred2), color='blue')
+```
+
+A regression plot displays this separation between predicted wing length in adult and immature hawks.
+
+```{r glm_assumption}
+hawkmean%>%ggplot(aes(tail_c,wing_c))+geom_point()+geom_smooth(method = 'lm',se=F)
+resids<-hawk_lm$residuals
+fitvals<-hawk_lm$fitted.values
+ggplot()+geom_histogram(aes(resids), bins=20)
+bptest(hawk_lm)
+```
+
+The assumption of linearity is met, as is the assumption for independent observations and random sampling. The assumptions of normality and heteroskedasticity are not met.
+
+```{r glm_robust}
+coeftest(hawk_lm, vcov=vcovHC(hawk_lm))
+summary(hawk_lm)
+
+```
+
+With robust standard errors, there is a significant effect of tail length (*p*<0.001) and age(*p*=0.01) on wing length, but the interaction term is not significant. While p values have increased in comparison to the original model, the same terms have remained significant. The model explains 81.21% of variation in the outcome.
+
+
+## 4. Bootstrapped Standard Errors
+
+```{r boot}
+samp_distn<-replicate(5000, {
+ boot_dat<-hawkmean[sample(nrow(hawkmean),replace=TRUE),]
+ fit<-lm(wing_c~tail_c*Age,data=boot_dat)
+ coef(fit)
+})
+coeftest(hawk_lm)[,1:2]
+coeftest(hawk_lm, vcov=vcovHC(hawk_lm))[,1:2]
+samp_distn%>%t%>%as.data.frame%>%summarize_all(sd)
+samp_distn%>%t%>%as.data.frame%>%gather%>%group_by(key)%>%
+ summarize(lower=quantile(value,.025), upper=quantile(value,.975))
+
+```
+
+The bootstrapped standard errors are larger than those of the original model but smaller than robust standard errors. All estimates fall within the 95% confidence interval for the bootstrapped model, giving significance to the interaction term in this model.
+
+## 5. Logistic Regression
+
+```{r log}
+hawkmean<-hawkmean%>%filter(!is.na(Hallux),!is.na(Species),!is.na(Culmen))%>%mutate(culmen_c=Culmen-mean(Culmen),hallux_c=Hallux-mean(Hallux),red=ifelse(Species=="RT",1,0))
+hawk_log<-glm(red~hallux_c+culmen_c,data=hawkmean,family=binomial)
+coeftest(hawk_log)
+exp(0.0808)
+exp(0.960)
+```
+
+Here, I run a logistic regression of being a red-tailed hawk on hallux and culmen size. One mm increase in hallux length significantly increases the odds of being a red-tailed hawk by e^0.08 or 108.4%, and one mm increase in culmen size increases the odds of being a red-tailed hawk by e^0.96 or 261.1%.
+
+```{r conf.mat}
+prob<-predict(hawk_log,type="response")
+pred<-ifelse(prob>.5,1,0)
+table(truth=hawkmean$red, prediction=pred)%>%addmargins
+(236+320)/563
+320/322
+236/238
+320/325
+```
+
+According to the confusion matrix, this model has an Accuracy of 0.988, Sensitivity of 0.994, Specificity of 0.992, and Recall of 0.985.
+
+```{r density}
+hawkmean$logit<-predict(hawk_log,type="link")
+hawkmean$RedTailed<-ifelse(hawkmean$red==1,"Y","N")
+
+hawkmean%>%ggplot()+geom_density(aes(logit,color=RedTailed,fill=RedTailed),alpha=0.4)+
+  theme(legend.position=c(.85,.85))+geom_vline(xintercept=0)+xlab("predictor (logit)")
+
+
+```
+
+According to the density plot, a cutoff value of zero fairly accurately predicts whether a hawk was a red-tailed.
+
+```{r ROC}
+ROCplot<-ggplot(hawkmean)+geom_roc(aes(d=red,m=prob), n.cuts=0)
+ROCplot
+calc_auc(ROCplot)
+```
+The ROCplot for this model and a high AUC of 0.998 indicate that this model is an extremely good predictor of a bird being a red-tailed hawk in this dataset.
+
+```{r CV}
+
+class_diag<-function(probs,truth){
+  
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+k=10
+
+data1<-hawkmean[sample(nrow(hawkmean)),]
+folds<-cut(seq(1:nrow(hawkmean)),breaks=k,labels=F) 
+
+diags<-NULL
+for(i in 1:k){ 
+  train<-data1[folds!=i,] 
+  test<-data1[folds==i,] 
+  truth<-test$red
+  
+  fit<- glm(red~hallux_c+culmen_c,data=train,family="binomial")
+  probs<- predict(fit,newdata = test,type="response")
+  
+  diags<-rbind(diags,class_diag(probs,truth)) 
+}
+
+apply(diags,2,mean)
+```
+
+After a 10-fold cross validation, the average out-of-sample accuracy is 0.988, sensitivity is 0.994, and ppv is 0.985.
+
+## 6. Lasso Regression
+
+```{r Lasso}
+hawkmean2<-dplyr::select(hawkmean,Weight , Tail , Wing , Weight , Culmen , Hallux , Tail , Tarsus , Age,red)
+hawkmean2<-hawkmean2%>%drop_na()
+hawkfit <- glm(red ~ -1 + Weight + Tail + Wing + Weight + Culmen + Hallux + Tail + Tarsus + Age, data = hawkmean2, family = "binomial")
+x<-model.matrix(hawkfit)
+x<-scale(x)
+y<-as.matrix(hawkmean2$red)
+cv2<-cv.glmnet(x,y,family='binomial')
+lasso<-glmnet(x,y,family='binomial',lambda=cv2$lambda.1se)
+coef(cv2)
+
+
+```
+
+Considering all predictors (that were relevant and contained little NAs) of a bird being a red-tailed hawk, LASSO regression retains the variables Weight, Wing, Hallux, and Tarsus.
+
+```{r LassoCV}
+k=10 
+data1<-hawkmean2[sample(nrow(hawkmean2)),] 
+folds<-cut(seq(1:nrow(hawkmean2)),breaks=k,labels=F) 
+diags<-NULL
+for(i in 1:k){
+ train<-data1[folds!=i,]
+ test<-data1[folds==i,]
+ truth<-test$red
+ fit<-glm(red ~ -1 + Weight + Wing + Hallux + Tarsus ,data=train,family="binomial")
+ probs<-predict(fit,newdata = test,type="response")
+ ## Test model on test set (save all k results)
+ diags<-rbind(diags,class_diag(probs,truth))
+}
+diags%>%summarize_all(mean)
+
+
+```
+
+This model's out-of-sample accuracy is lower than that of my logistic regression in part 5, but still relatively high. This is likely because the numeric variables in this model were not centered.
+

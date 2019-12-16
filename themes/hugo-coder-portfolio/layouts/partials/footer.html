@@ -1,0 +1,25 @@
+<footer class="footer">
+  <section class="container centered">
+    <div class="about">
+    {{ with .Site.Params.social }}
+    <ul class="social-list">
+      {{ range sort . "weight"}}
+        <li class="social-item">
+          <a href="{{ .url }}" aria-label="{{ .name }}" {{ if .rel }}rel="{{ .rel }}"{{ end }}>
+            {{ if .icon }}
+              <i class="{{ .icon }}" aria-hidden="true"></i>
+            {{ else }}
+              {{ .name }}
+            {{ end }}
+          </a>
+        </li>
+      {{ end }}
+    </ul>
+    {{ end }}
+  {{ with .Site.Params.footercontent }}
+      <p>{{.}}</p>
+    {{ end }}
+    {{ if not .Site.Params.hideCopyright }} © {{ .Site.LastChange.Format "2006" }} {{ end }} {{ if not .Site.Params.hideCredits}} {{ if not .Site.Params.hideCopyright }} · {{ end }} Powered by <a href="https://gohugo.io/"> Hugo</a> & <a href="https://github.com/naro143/hugo-coder-portfolio">CoderPortfolio</a>. {{ end }}
+    </div>
+  </section>
+</footer>

@@ -1,0 +1,13 @@
+"0","library(knitr)"
+"0","opts_chunk$set(fig.align=""center"", fig.height=5, message=FALSE, warning=FALSE, fig.width=8, tidy.opts=list(width.cutoff=60),tidy=TRUE)"
+"0","library(Stat2Data)"
+"0","library(tidyverse)"
+"0","library(ggplot2)"
+"0","library(dplyr)"
+"0","library(MASS)"
+"0","library(lmtest)"
+"0","library(plotROC)"
+"2","package ‘plotROC’ was built under R version 3.4.4"
+"0","library(glmnet)"
+"2","Error in library(glmnet) : there is no package called ‘glmnet’
+"

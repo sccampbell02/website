@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Sarah Campbell">
+    <meta name="description" content="/.">
+    <meta name="keywords" content="neuroscience,research,personal">
+
+    <meta property="og:site_name" content="Sarah Campbell">
+    <meta property="og:title" content="
+  EDA with Birds - Sarah Campbell
+">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/./edawriteup/">
+    <meta property="og:image" content="/.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="/./edawriteup/">
+    <meta name="twitter:image" content="/.">
+
+    <base href="/./edawriteup/">
+    <title>
+  EDA with Birds - Sarah Campbell
+</title>
+
+    <link rel="canonical" href="/./edawriteup/">
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:400,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/normalize.min.css">
+    <link rel="stylesheet" href="/css/style.min.css">
+
+    
+
+    
+
+    <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+    
+      <link rel="alternate" href="/./index.xml" type="application/rss+xml" title="Sarah Campbell">
+      <link href="/./index.xml" rel="feed" type="application/rss+xml" title="Sarah Campbell" />
+    
+
+    <meta name="generator" content="Hugo 0.61.0" />
+  </head>
+
+  <body class="">
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">Sarah Campbell</a>
+    <input type="checkbox" id="menu-control"/>
+    <label class="menu-mobile  float-right " for="menu-control">
+      <span class="btn-mobile  float-right ">&#9776;</span>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/about">About</a>
+            </li>
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/posts">Blog</a>
+            </li>
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/projects">Projects</a>
+            </li>
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/CV">CV</a>
+            </li>
+          
+        
+        
+      </ul>
+    </label>
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container page">
+  <article>
+    <header>
+      <h1>EDA with Birds</h1>
+    </header>
+
+    
+
+
+<p><em>10/20/2019</em></p>
+<div id="exploratory-data-analysis-whats-going-on-with-birds" class="section level1">
+<h1>Exploratory Data Analysis: What’s Going on with Birds?</h1>
+<div id="introduction" class="section level2">
+<h2>0. Introduction</h2>
+<p>In this report, I will be examining <strong>NCRN Bird Monitoring Datasets</strong> from 2007-2018. These datasets report sightings of forest (and beginning in 2014, grassland) birds across 11 U.S. national parks in the Naitonal Capital Region, recorded twice per year at every site. Each dataset represents one park’s records from 2007-2017, with some parks contributing an additional dataset for 2018. Observations were contributed by Wolf Trap National Park for the Performing Arts (WOTR), Rock Creek Park (ROCR),
+Prince William Forest Park (PRWI), National Capital Parks-East (NACE), Monocacy National Battlefield (MONO), Manassas National Battlefield Park (MANA), Harpers Ferry National Historical Park (HAFE), George Washington Memorial Parkway (GWMP), Chesapeake and Ohio Canal National Historical Park (CHOH), Catoctin National Park (CATO), and Antietam National Battlefield (ANTI). The variables included in these datasets are as follows:</p>
+<ul>
+<li><p>Admin_Unit_Code: Four-letter code describing national park of origin.</p></li>
+<li><p>Sub_Unit_Code: Four-letter code describing sub-region of origin within a given park.</p></li>
+<li><p>Site/Route_Name: Name of site or route monitored.</p></li>
+<li><p>Plot_Name: Name of plot within site.</p></li>
+<li><p>Location_Type: Forest or grassland.</p></li>
+<li><p>Year: Year of survey.</p></li>
+<li><p>Date: Exact date of survey.</p></li>
+<li><p>Start_Time: Start time of bird survey.</p></li>
+<li><p>End_Time: End time of bird survey.</p></li>
+<li><p>Observer: Name of observer.</p></li>
+<li><p>Visit: Visit number to site within the year of observation (1 or 2).</p></li>
+<li><p>Interval_Length: Which of four 2.5-minute survey intervals an observation fell into.</p></li>
+<li><p>ID_Method: Attribute used to identify bird.</p></li>
+<li><p>Distance: Distance range in which bird was located.</p></li>
+<li><p>Flyover_Observed: Whether bird was observed flying over plot.</p></li>
+<li><p>Sex: Sex of bird observed.</p></li>
+<li><p>Common_Name: Common name of bird observed.</p></li>
+<li><p>Scientific_Name: Scientific Name of bird observed.</p></li>
+<li><p>AcceptedTSN: Species Taxonomic Serial Number as defined by the USDA Integrated Taxonomic Information System.</p></li>
+<li><p>NPSTaxonCode: Species code according to the NPS biodiversity database.</p></li>
+<li><p>AOU_Code: American Ornithology Union Code for each species documented.</p></li>
+<li><p>PIF_Watchlist_Status: Whether species is member of the Regional and Continental Partners in Flight Watchlist.</p></li>
+<li><p>Regional_Stewardship_Status: Whether regional habitat is critical to this species.</p></li>
+<li><p>Temperature: Air temperature in degrees Fahrenheit.</p></li>
+<li><p>Humidity: Relative humidity at time of survey.</p></li>
+<li><p>Sky: Weather conditions at time of survey.</p></li>
+<li><p>Wind: Description of wind during survey.</p></li>
+<li><p>Disturbance: Whether any disturbances had an effect on observation count.</p></li>
+<li><p>Previously_Obs: Whether bird had previously been observed at that site.</p></li>
+<li><p>Initial_Three_Min_Cnt: Whether observation was made within first three minutes of survey.</p>
+<p>This data is publicly accessible and provided by the US National Park Service as part of the Inventory and Monitoring Network. The raw data and associated metadata were downloaded via data.gov, a public source for US Government-generated databases. As a student planning to pursue a PhD that is linked to ecology, and a concerned citizen on the subject of preserving biodiversity within the National Parks System, I selected this dataset to investigate changes in these avian populations over time and postulate reasons for any general trends.</p></li>
+</ul>
+</div>
+<div id="joining-the-datasets" class="section level2">
+<h2>1. Joining the Datasets</h2>
+<p>Because each of the 15 datasets contains the same variable names, and because I want to retain as much data as possible, I perform a full join of all datasets into one (“birds”) with a bit of tidying beforehand. The “Sub_Unit_Code” variable type needed to be standardized to character across datasets, and datasets ending in “2” needed to have the truncated “TaxonCode” variable lengthened to the proper “NPSTaxonCode.”</p>
+<p>It’s important that I retain all observations, even duplicates, because each row represents a unique instance of bird observation.</p>
+<pre class="r"><code>ANTI1 &lt;- transform(ANTI1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+ANTI2 &lt;- ANTI2 %&gt;% transform(Sub_Unit_Code = as.character(Sub_Unit_Code)) %&gt;% 
+    rename(NPSTaxonCode = TaxonCode)
+CATO1 &lt;- transform(CATO1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+CHOH1 &lt;- transform(CHOH1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+GWMP1 &lt;- transform(GWMP1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+HAFE1 &lt;- transform(HAFE1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+HAFE2 &lt;- HAFE2 %&gt;% transform(Sub_Unit_Code = as.character(Sub_Unit_Code)) %&gt;% 
+    rename(NPSTaxonCode = TaxonCode)
+MANA1 &lt;- transform(MANA1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+MANA2 &lt;- MANA2 %&gt;% transform(Sub_Unit_Code = as.character(Sub_Unit_Code)) %&gt;% 
+    rename(NPSTaxonCode = TaxonCode)
+MONO1 &lt;- transform(MONO1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+MONO2 &lt;- MONO2 %&gt;% transform(Sub_Unit_Code = as.character(Sub_Unit_Code)) %&gt;% 
+    rename(NPSTaxonCode = TaxonCode)
+NACE1 &lt;- transform(NACE1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+PRWI1 &lt;- transform(PRWI1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+ROCR1 &lt;- transform(ROCR1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+WOTR1 &lt;- transform(WOTR1, Sub_Unit_Code = as.character(Sub_Unit_Code))
+
+
+
+birds &lt;- ANTI1 %&gt;% full_join(ANTI2, by = NULL) %&gt;% full_join(CATO1, 
+    by = NULL) %&gt;% full_join(CHOH1, by = NULL) %&gt;% full_join(GWMP1, 
+    by = NULL) %&gt;% full_join(HAFE1, by = NULL) %&gt;% full_join(HAFE2, 
+    by = NULL) %&gt;% full_join(MANA1, by = NULL) %&gt;% full_join(MANA2, 
+    by = NULL) %&gt;% full_join(MONO1, by = NULL) %&gt;% full_join(MONO2, 
+    by = NULL) %&gt;% full_join(NACE1, by = NULL) %&gt;% full_join(PRWI1, 
+    by = NULL) %&gt;% full_join(ROCR1, by = NULL) %&gt;% full_join(WOTR1, 
+    by = NULL)</code></pre>
+<pre><code>## Joining, by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;, &quot;Plot_Name&quot;,
+## &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;,
+## &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;, &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;,
+## &quot;Common_Name&quot;, &quot;Scientific_Name&quot;, &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;,
+## &quot;PIF_Watchlist_Status&quot;, &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;,
+## &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;, &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining,
+## by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;, &quot;Site_Name&quot;, &quot;Plot_Name&quot;,
+## &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;,
+## &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;, &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;,
+## &quot;Common_Name&quot;, &quot;Scientific_Name&quot;, &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;,
+## &quot;PIF_Watchlist_Status&quot;, &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;,
+## &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;, &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining,
+## by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;, &quot;Site_Name&quot;, &quot;Plot_Name&quot;,
+## &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;,
+## &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;, &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;,
+## &quot;Common_Name&quot;, &quot;Scientific_Name&quot;, &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;,
+## &quot;PIF_Watchlist_Status&quot;, &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;,
+## &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;, &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining,
+## by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;, &quot;Site_Name&quot;, &quot;Plot_Name&quot;,
+## &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;,
+## &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;, &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;,
+## &quot;Common_Name&quot;, &quot;Scientific_Name&quot;, &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;,
+## &quot;PIF_Watchlist_Status&quot;, &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;,
+## &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;, &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining,
+## by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;, &quot;Site_Name&quot;, &quot;Plot_Name&quot;,
+## &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;,
+## &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;, &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;,
+## &quot;Common_Name&quot;, &quot;Scientific_Name&quot;, &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;,
+## &quot;PIF_Watchlist_Status&quot;, &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;,
+## &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;, &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining,
+## by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;, &quot;Plot_Name&quot;, &quot;Location_Type&quot;,
+## &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;, &quot;Visit&quot;,
+## &quot;Interval_Length&quot;, &quot;ID_Method&quot;, &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;,
+## &quot;Common_Name&quot;, &quot;Scientific_Name&quot;, &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;,
+## &quot;PIF_Watchlist_Status&quot;, &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;,
+## &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;, &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;,
+## &quot;Previously_Obs&quot;)Joining, by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;,
+## &quot;Site_Name&quot;, &quot;Plot_Name&quot;, &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;,
+## &quot;End_Time&quot;, &quot;Observer&quot;, &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;,
+## &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;, &quot;Common_Name&quot;, &quot;Scientific_Name&quot;,
+## &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;, &quot;PIF_Watchlist_Status&quot;,
+## &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;, &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;,
+## &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining, by = c(&quot;Admin_Unit_Code&quot;,
+## &quot;Sub_Unit_Code&quot;, &quot;Plot_Name&quot;, &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;,
+## &quot;End_Time&quot;, &quot;Observer&quot;, &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;,
+## &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;, &quot;Common_Name&quot;, &quot;Scientific_Name&quot;,
+## &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;, &quot;PIF_Watchlist_Status&quot;,
+## &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;, &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;,
+## &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;, &quot;Previously_Obs&quot;)Joining,
+## by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;, &quot;Site_Name&quot;, &quot;Plot_Name&quot;,
+## &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;,
+## &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;, &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;,
+## &quot;Common_Name&quot;, &quot;Scientific_Name&quot;, &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;,
+## &quot;PIF_Watchlist_Status&quot;, &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;,
+## &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;, &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining,
+## by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;, &quot;Plot_Name&quot;, &quot;Location_Type&quot;,
+## &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;, &quot;Visit&quot;,
+## &quot;Interval_Length&quot;, &quot;ID_Method&quot;, &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;,
+## &quot;Common_Name&quot;, &quot;Scientific_Name&quot;, &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;,
+## &quot;PIF_Watchlist_Status&quot;, &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;,
+## &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;, &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;,
+## &quot;Previously_Obs&quot;)Joining, by = c(&quot;Admin_Unit_Code&quot;, &quot;Sub_Unit_Code&quot;,
+## &quot;Site_Name&quot;, &quot;Plot_Name&quot;, &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;, &quot;Start_Time&quot;,
+## &quot;End_Time&quot;, &quot;Observer&quot;, &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;,
+## &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;, &quot;Common_Name&quot;, &quot;Scientific_Name&quot;,
+## &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;, &quot;PIF_Watchlist_Status&quot;,
+## &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;, &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;,
+## &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining, by = c(&quot;Admin_Unit_Code&quot;,
+## &quot;Sub_Unit_Code&quot;, &quot;Site_Name&quot;, &quot;Plot_Name&quot;, &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;,
+## &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;, &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;,
+## &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;, &quot;Common_Name&quot;, &quot;Scientific_Name&quot;,
+## &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;, &quot;PIF_Watchlist_Status&quot;,
+## &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;, &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;,
+## &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining, by = c(&quot;Admin_Unit_Code&quot;,
+## &quot;Sub_Unit_Code&quot;, &quot;Site_Name&quot;, &quot;Plot_Name&quot;, &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;,
+## &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;, &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;,
+## &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;, &quot;Common_Name&quot;, &quot;Scientific_Name&quot;,
+## &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;, &quot;PIF_Watchlist_Status&quot;,
+## &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;, &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;,
+## &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)Joining, by = c(&quot;Admin_Unit_Code&quot;,
+## &quot;Sub_Unit_Code&quot;, &quot;Site_Name&quot;, &quot;Plot_Name&quot;, &quot;Location_Type&quot;, &quot;Year&quot;, &quot;Date&quot;,
+## &quot;Start_Time&quot;, &quot;End_Time&quot;, &quot;Observer&quot;, &quot;Visit&quot;, &quot;Interval_Length&quot;, &quot;ID_Method&quot;,
+## &quot;Distance&quot;, &quot;Flyover_Observed&quot;, &quot;Sex&quot;, &quot;Common_Name&quot;, &quot;Scientific_Name&quot;,
+## &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AOU_Code&quot;, &quot;PIF_Watchlist_Status&quot;,
+## &quot;Regional_Stewardship_Status&quot;, &quot;Temperature&quot;, &quot;Humidity&quot;, &quot;Sky&quot;, &quot;Wind&quot;,
+## &quot;Disturbance&quot;, &quot;Initial_Three_Min_Cnt&quot;)</code></pre>
+</div>
+<div id="tidying-and-wrangling" class="section level2">
+<h2>2.Tidying and Wrangling</h2>
+<div id="a.-tidying" class="section level3">
+<h3>2a. Tidying</h3>
+<p>The dataset is already pretty tidy, but I’ll demonstrate use of pivoting by creating a single column for all numeric species ID tags and a separate column for their values.This makes for a too-long dataset, so I reverse it by pivoting wider, drawing names from the ID tag column and values from the ID column.</p>
+<pre class="r"><code>glimpse(birds %&gt;% pivot_longer(c(AcceptedTSN, NPSTaxonCode), 
+    names_to = &quot;ID_type&quot;, values_to = &quot;ID&quot;)) %&gt;% pivot_wider(names_from = ID_type, 
+    values_from = ID)</code></pre>
+<pre><code>## Observations: 270,208
+## Variables: 30
+## $ Admin_Unit_Code             &lt;chr&gt; &quot;ANTI&quot;, &quot;ANTI&quot;, &quot;ANTI&quot;, &quot;ANTI&quot;, &quot;ANTI&quot;, &quot;…
+## $ Sub_Unit_Code               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ Site_Name                   &lt;chr&gt; &quot;ANTI 2&quot;, &quot;ANTI 2&quot;, &quot;ANTI 2&quot;, &quot;ANTI 2&quot;, &quot;…
+## $ Plot_Name                   &lt;chr&gt; &quot;ANTI-0207&quot;, &quot;ANTI-0207&quot;, &quot;ANTI-0207&quot;, &quot;A…
+## $ Location_Type               &lt;chr&gt; &quot;Forest&quot;, &quot;Forest&quot;, &quot;Forest&quot;, &quot;Forest&quot;, &quot;…
+## $ Year                        &lt;int&gt; 2008, 2008, 2008, 2008, 2008, 2008, 2008,…
+## $ Date                        &lt;chr&gt; &quot;5/28/08&quot;, &quot;5/28/08&quot;, &quot;5/28/08&quot;, &quot;5/28/08…
+## $ Start_Time                  &lt;chr&gt; &quot;6:42&quot;, &quot;6:42&quot;, &quot;6:42&quot;, &quot;6:42&quot;, &quot;6:42&quot;, &quot;…
+## $ End_Time                    &lt;chr&gt; &quot;6:52&quot;, &quot;6:52&quot;, &quot;6:52&quot;, &quot;6:52&quot;, &quot;6:52&quot;, &quot;…
+## $ Observer                    &lt;chr&gt; &quot;Desiree Narango&quot;, &quot;Desiree Narango&quot;, &quot;De…
+## $ Visit                       &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ Interval_Length             &lt;chr&gt; &quot;0-2.5 min&quot;, &quot;0-2.5 min&quot;, &quot;0-2.5 min&quot;, &quot;0…
+## $ ID_Method                   &lt;chr&gt; &quot;Calling&quot;, &quot;Calling&quot;, &quot;Calling&quot;, &quot;Calling…
+## $ Distance                    &lt;fct&gt; &lt;= 50 Meters, &lt;= 50 Meters, 50 - 100 Mete…
+## $ Flyover_Observed            &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…
+## $ Sex                         &lt;chr&gt; &quot;Undetermined&quot;, &quot;Undetermined&quot;, &quot;Undeterm…
+## $ Common_Name                 &lt;chr&gt; &quot;Acadian Flycatcher&quot;, &quot;Acadian Flycatcher…
+## $ Scientific_Name             &lt;chr&gt; &quot;Empidonax virescens&quot;, &quot;Empidonax viresce…
+## $ AOU_Code                    &lt;chr&gt; &quot;ACFL&quot;, &quot;ACFL&quot;, &quot;BGGN&quot;, &quot;BGGN&quot;, &quot;ACFL&quot;, &quot;…
+## $ PIF_Watchlist_Status        &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…
+## $ Regional_Stewardship_Status &lt;lgl&gt; TRUE, TRUE, FALSE, FALSE, TRUE, TRUE, FAL…
+## $ Temperature                 &lt;dbl&gt; 15.6, 15.6, 15.6, 15.6, 15.6, 15.6, 15.6,…
+## $ Humidity                    &lt;dbl&gt; 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 5…
+## $ Sky                         &lt;chr&gt; &quot;Cloudy/Overcast&quot;, &quot;Cloudy/Overcast&quot;, &quot;Cl…
+## $ Wind                        &lt;chr&gt; &quot;Calm (&lt; 1 mph) smoke rises vertically&quot;, …
+## $ Disturbance                 &lt;chr&gt; &quot;No effect on count&quot;, &quot;No effect on count…
+## $ Initial_Three_Min_Cnt       &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…
+## $ Previously_Obs              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ ID_type                     &lt;chr&gt; &quot;AcceptedTSN&quot;, &quot;NPSTaxonCode&quot;, &quot;AcceptedT…
+## $ ID                          &lt;int&gt; 178339, 85824, 179853, 88038, 178339, 858…</code></pre>
+<pre><code>## Warning: Values in `ID` are not uniquely identified; output will contain list-cols.
+## * Use `values_fn = list(ID = list)` to suppress this warning.
+## * Use `values_fn = list(ID = length)` to identify where the duplicates arise
+## * Use `values_fn = list(ID = summary_fun)` to summarise duplicates</code></pre>
+<pre><code>## # A tibble: 127,280 x 30
+##    Admin_Unit_Code Sub_Unit_Code Site_Name Plot_Name Location_Type  Year Date 
+##    &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;         &lt;int&gt; &lt;chr&gt;
+##  1 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+##  2 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+##  3 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+##  4 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+##  5 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+##  6 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+##  7 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+##  8 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+##  9 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+## 10 ANTI            &lt;NA&gt;          ANTI 2    ANTI-0207 Forest         2008 5/28…
+## # … with 127,270 more rows, and 23 more variables: Start_Time &lt;chr&gt;,
+## #   End_Time &lt;chr&gt;, Observer &lt;chr&gt;, Visit &lt;int&gt;, Interval_Length &lt;chr&gt;,
+## #   ID_Method &lt;chr&gt;, Distance &lt;fct&gt;, Flyover_Observed &lt;lgl&gt;, Sex &lt;chr&gt;,
+## #   Common_Name &lt;chr&gt;, Scientific_Name &lt;chr&gt;, AOU_Code &lt;chr&gt;,
+## #   PIF_Watchlist_Status &lt;lgl&gt;, Regional_Stewardship_Status &lt;lgl&gt;,
+## #   Temperature &lt;dbl&gt;, Humidity &lt;dbl&gt;, Sky &lt;chr&gt;, Wind &lt;chr&gt;,
+## #   Disturbance &lt;chr&gt;, Initial_Three_Min_Cnt &lt;lgl&gt;, Previously_Obs &lt;lgl&gt;,
+## #   AcceptedTSN &lt;list&lt;int&gt;&gt;, NPSTaxonCode &lt;list&lt;int&gt;&gt;</code></pre>
+<p>From here, I want to replace any blank values with NAs. I’ll then take a look at the dataset by variable to a) ensure that the data is in the best format for analysis, and b) to correct any data entry errors. I’ll start with Admin_Unit_Code:</p>
+<pre class="r"><code>birds &lt;- birds %&gt;% mutate_all(na_if, &quot;&quot;)
+birds %&gt;% count(Admin_Unit_Code)</code></pre>
+<pre><code>## # A tibble: 11 x 2
+##    Admin_Unit_Code     n
+##    &lt;chr&gt;           &lt;int&gt;
+##  1 ANTI            17818
+##  2 CATO             9741
+##  3 CHOH            26417
+##  4 GWMP             4696
+##  5 HAFE             5696
+##  6 MANA            16034
+##  7 MONO            13723
+##  8 NACE             7623
+##  9 PRWI            29111
+## 10 ROCR             3588
+## 11 WOTR              657</code></pre>
+<p>It looks like each unit has one entry, as expected. Moving on to Sub_Unit_Code:</p>
+<pre class="r"><code>birds %&gt;% count(Sub_Unit_Code)</code></pre>
+<pre><code>## # A tibble: 9 x 2
+##   Sub_Unit_Code      n
+##   &lt;chr&gt;          &lt;int&gt;
+## 1 ANAC             227
+## 2 FOCI             541
+## 3 FODU             960
+## 4 FOWA             883
+## 5 GREE            1600
+## 6 OXHI             416
+## 7 PISC            2996
+## 8 THIS             525
+## 9 &lt;NA&gt;          126956</code></pre>
+<p>Again, I’m not seeing any repeats. I expect the same from Site_Name, Location_Type, and Year, so to double-check:</p>
+<pre class="r"><code>birds %&gt;% count(Site_Name)</code></pre>
+<pre><code>## # A tibble: 71 x 2
+##    Site_Name     n
+##    &lt;chr&gt;     &lt;int&gt;
+##  1 ANTI 1     1342
+##  2 ANTI 2     1459
+##  3 CATO 1     1332
+##  4 CATO 2     1188
+##  5 CATO 3     1099
+##  6 CATO 4     1413
+##  7 CATO 5     1416
+##  8 CATO 6      946
+##  9 CATO 7     1430
+## 10 CATO 8      917
+## # … with 61 more rows</code></pre>
+<pre class="r"><code>birds %&gt;% count(Location_Type)</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   Location_Type     n
+##   &lt;chr&gt;         &lt;int&gt;
+## 1 Forest        98171
+## 2 Grassland     36917
+## 3 &lt;NA&gt;             16</code></pre>
+<pre class="r"><code>birds %&gt;% count(Year)</code></pre>
+<pre><code>## # A tibble: 12 x 2
+##     Year     n
+##    &lt;int&gt; &lt;int&gt;
+##  1  2007  8899
+##  2  2008  9835
+##  3  2009  7513
+##  4  2010  8798
+##  5  2011  8487
+##  6  2012  7790
+##  7  2013  9794
+##  8  2014 14650
+##  9  2015 16993
+## 10  2016 16757
+## 11  2017 17057
+## 12  2018  8531</code></pre>
+<p>This brings me to date and times, which are currently character values. To make this a more useful value that I can use to plot timepoints and measure length between observations, I’ll use the <strong>as.POSIXct</strong> function to convert these to date and time variables. While I’m at it, I’ll <strong>mutate</strong> to create an additional time_elapsed variable, showing the length in minutes of each survey.</p>
+<pre class="r"><code>birds$Start_Time &lt;- as.POSIXct(paste(birds$Date, birds$Start_Time), 
+    format = &quot;%m/%d/%y %H:%M&quot;)
+birds$End_Time &lt;- as.POSIXct(paste(birds$Date, birds$End_Time), 
+    format = &quot;%m/%d/%y %H:%M&quot;)
+birds$Date &lt;- as.POSIXct(birds$Date, format = &quot;%m/%d/%y&quot;)
+birds &lt;- birds %&gt;% mutate(time_elapsed = difftime(End_Time, Start_Time, 
+    units = &quot;mins&quot;)) %&gt;% transform(time_elapsed = as.integer(time_elapsed))</code></pre>
+<p>While checking whether observers were repeated, I noticed two possible instances of duplicate names due to misspellings. Using <em>mutate</em> and <em>replace</em>, I corrected the misspellings.</p>
+<pre class="r"><code>glimpse(birds %&gt;% count(Observer))</code></pre>
+<pre><code>## Observations: 35
+## Variables: 2
+## $ Observer &lt;chr&gt; &quot;A.J. MacLaren&quot;, &quot;Allison Hanna&quot;, &quot;Anna Livingston&quot;, &quot;Ashley…
+## $ n        &lt;int&gt; 2606, 3791, 2563, 4245, 2086, 4423, 2433, 3363, 5986, 13629,…</code></pre>
+<pre class="r"><code>birds &lt;- birds %&gt;% mutate(Observer = replace(Observer, Observer == 
+    &quot;Josh Schlict&quot;, &quot;Josh Schlicht&quot;)) %&gt;% mutate(Observer = replace(Observer, 
+    Observer == &quot;Sascha Robinson&quot;, &quot;Sasha Robinson&quot;))</code></pre>
+<p>On to Interval_Length. RStudio recognizes this variable as a character, but I want to be able to order these intervals chronologically. To do this, I’ll replace these values with quartile number. “1” is the 0-2.5 min interval, “2” is the 2.5-5min interval, “3” is the 5-7.5min interval, and “4” is the 7.5-10min variable.</p>
+<pre class="r"><code>birds &lt;- birds %&gt;% mutate(Interval_Length = replace(Interval_Length, 
+    Interval_Length == &quot;0-2.5 min&quot;, 1)) %&gt;% mutate(Interval_Length = replace(Interval_Length, 
+    Interval_Length == &quot;2.5 - 5 min&quot;, 2)) %&gt;% mutate(Interval_Length = replace(Interval_Length, 
+    Interval_Length == &quot;5 - 7.5 min&quot;, 3)) %&gt;% mutate(Interval_Length = replace(Interval_Length, 
+    Interval_Length == &quot;7.5 - 10 min&quot;, 4))</code></pre>
+<p>The next variable I want to tidy is Scientific_Name. It might be useful to organize birds by genus, so I’ll separate the genus and species of the scientific name using <em>separate</em>. Some entries were typed in as <strong>Genus</strong> (gen, sp), so I changed the species listing on those to NA.</p>
+<pre class="r"><code>birds &lt;- birds %&gt;% separate(Scientific_Name, into = c(&quot;Genus&quot;, 
+    &quot;Species&quot;), sep = &quot; &quot;) %&gt;% mutate(Species = replace(Species, 
+    Species == &quot;(gen,&quot;, NA))</code></pre>
+<pre><code>## Warning: Expected 2 pieces. Additional pieces discarded in 3 rows [1672, 33402,
+## 65340].</code></pre>
+<pre><code>## Warning: Expected 2 pieces. Missing pieces filled with `NA` in 2473 rows [150,
+## 177, 275, 292, 312, 379, 555, 664, 665, 671, 746, 754, 755, 770, 771, 822, 850,
+## 851, 886, 909, ...].</code></pre>
+<p>It doesn’t look like there are a lot of common genera, so a higher form of organization (i.e., order and family) might come in handy. Luckily, the taxonomic serial number of each species can be found through an ITIS dataset, which includes the taxonomic data I want. I can perform a left join with this dataset by AcceptedTSN, replacing ITIS’s “taxonID”.</p>
+<pre class="r"><code>birds &lt;- birds %&gt;% left_join(taxa, by = c(AcceptedTSN = &quot;taxonID&quot;))
+glimpse(birds)</code></pre>
+<pre><code>## Observations: 135,104
+## Variables: 34
+## $ Admin_Unit_Code             &lt;chr&gt; &quot;ANTI&quot;, &quot;ANTI&quot;, &quot;ANTI&quot;, &quot;ANTI&quot;, &quot;ANTI&quot;, &quot;…
+## $ Sub_Unit_Code               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ Site_Name                   &lt;chr&gt; &quot;ANTI 2&quot;, &quot;ANTI 2&quot;, &quot;ANTI 2&quot;, &quot;ANTI 2&quot;, &quot;…
+## $ Plot_Name                   &lt;chr&gt; &quot;ANTI-0207&quot;, &quot;ANTI-0207&quot;, &quot;ANTI-0207&quot;, &quot;A…
+## $ Location_Type               &lt;chr&gt; &quot;Forest&quot;, &quot;Forest&quot;, &quot;Forest&quot;, &quot;Forest&quot;, &quot;…
+## $ Year                        &lt;int&gt; 2008, 2008, 2008, 2008, 2008, 2008, 2008,…
+## $ Date                        &lt;dttm&gt; 2008-05-28, 2008-05-28, 2008-05-28, 2008…
+## $ Start_Time                  &lt;dttm&gt; 2008-05-28 06:42:00, 2008-05-28 06:42:00…
+## $ End_Time                    &lt;dttm&gt; 2008-05-28 06:52:00, 2008-05-28 06:52:00…
+## $ Observer                    &lt;chr&gt; &quot;Desiree Narango&quot;, &quot;Desiree Narango&quot;, &quot;De…
+## $ Visit                       &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ Interval_Length             &lt;chr&gt; &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;…
+## $ ID_Method                   &lt;chr&gt; &quot;Calling&quot;, &quot;Calling&quot;, &quot;Calling&quot;, &quot;Singing…
+## $ Distance                    &lt;fct&gt; &lt;= 50 Meters, 50 - 100 Meters, 50 - 100 M…
+## $ Flyover_Observed            &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…
+## $ Sex                         &lt;chr&gt; &quot;Undetermined&quot;, &quot;Undetermined&quot;, &quot;Undeterm…
+## $ Common_Name                 &lt;chr&gt; &quot;Acadian Flycatcher&quot;, &quot;Blue-gray Gnatcatc…
+## $ Genus                       &lt;chr&gt; &quot;Empidonax&quot;, &quot;Polioptila&quot;, &quot;Empidonax&quot;, &quot;…
+## $ Species                     &lt;chr&gt; &quot;virescens&quot;, &quot;caerulea&quot;, &quot;virescens&quot;, &quot;tr…
+## $ AcceptedTSN                 &lt;int&gt; 178339, 179853, 178339, 179236, 179731, 1…
+## $ NPSTaxonCode                &lt;int&gt; 85824, 88038, 85824, 95300, 87106, 87156,…
+## $ AOU_Code                    &lt;chr&gt; &quot;ACFL&quot;, &quot;BGGN&quot;, &quot;ACFL&quot;, &quot;AMGO&quot;, &quot;AMCR&quot;, &quot;…
+## $ PIF_Watchlist_Status        &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, …
+## $ Regional_Stewardship_Status &lt;lgl&gt; TRUE, FALSE, TRUE, FALSE, FALSE, TRUE, TR…
+## $ Temperature                 &lt;dbl&gt; 15.6, 15.6, 15.6, 15.6, 15.6, 15.6, 15.6,…
+## $ Humidity                    &lt;dbl&gt; 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 5…
+## $ Sky                         &lt;chr&gt; &quot;Cloudy/Overcast&quot;, &quot;Cloudy/Overcast&quot;, &quot;Cl…
+## $ Wind                        &lt;chr&gt; &quot;Calm (&lt; 1 mph) smoke rises vertically&quot;, …
+## $ Disturbance                 &lt;chr&gt; &quot;No effect on count&quot;, &quot;No effect on count…
+## $ Initial_Three_Min_Cnt       &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…
+## $ Previously_Obs              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ time_elapsed                &lt;int&gt; 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1…
+## $ order                       &lt;fct&gt; Passeriformes, Passeriformes, Passeriform…
+## $ family                      &lt;fct&gt; Tyrannidae, Polioptilidae, Tyrannidae, Fr…</code></pre>
+</div>
+<div id="b.-wrangling" class="section level3">
+<h3>2b. Wrangling</h3>
+<p>Now that I can work with the data, I can put it to some use. For example, it might be interesting to see which observer was most successful at finding birds. One might measure this by finding the highest ratio of birds spotted to days worked. In this case, Kimberly Serno seems to be the champion bird-finder. But one could also say a successful bird-watcher is able to reliably identify species. Looking at the ratio of species NAs (in other words, unidentified species) to total observations for each observer, it seems Kimberley Serno also has a 100% identification rate.</p>
+<pre class="r"><code>birds %&gt;% group_by(Observer) %&gt;% summarize(Avg_Birds_Spotted_Per_Day = n()/n_distinct(Date), 
+    Percent_Unidentified = sum(is.na(Species))/n()) %&gt;% arrange(desc(Avg_Birds_Spotted_Per_Day))</code></pre>
+<pre><code>## # A tibble: 33 x 3
+##    Observer         Avg_Birds_Spotted_Per_Day Percent_Unidentified
+##    &lt;chr&gt;                                &lt;dbl&gt;                &lt;dbl&gt;
+##  1 Kimberly Serno                       150.              0       
+##  2 Elizabeth Oswald                     141.              0.0193  
+##  3 Chris Hensley                        130.              0.0366  
+##  4 Brian Swimelar                       122.              0       
+##  5 Conor Higgins                        106.              0.0267  
+##  6 Sasha Robinson                       106.              0.0383  
+##  7 Ryan Trenkamp                         99.1             0       
+##  8 Josh Schlicht                         98.9             0.0402  
+##  9 Meta Griffin                          96.9             0.00268 
+## 10 Justin Hill                           93.3             0.000643
+## # … with 23 more rows</code></pre>
+<p>Because this dataset might be useful to see patterns in bird migration, I’ll identify which species have enough variability in number of sightings per site per day to warrant further investigation. I start off by creating the summary statistic “Sightings”, which indicates the number of times a species was spotted at each site on each day. I then calculate the “Range” of the “Sightings” metric for each species. Nonzero ranges correspond with species could have a change in population over each year, over the course of several years, or between sites. This could be interesting to visualize, so I will save the names of the nonzero-range birds into a vector for filtering later.</p>
+<pre class="r"><code>birds3 &lt;- birds %&gt;% group_by(Plot_Name, Date, Common_Name) %&gt;% 
+    summarize(Sightings = n()) %&gt;% filter(!is.na(Common_Name))
+head(birds3)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+## # Groups:   Plot_Name, Date [1]
+##   Plot_Name Date                Common_Name      Sightings
+##   &lt;chr&gt;     &lt;dttm&gt;              &lt;chr&gt;                &lt;int&gt;
+## 1 ANTI-0007 2015-05-25 00:00:00 Chipping Sparrow         2
+## 2 ANTI-0007 2015-05-25 00:00:00 Eastern Bluebird         1
+## 3 ANTI-0007 2015-05-25 00:00:00 Field Sparrow            1
+## 4 ANTI-0007 2015-05-25 00:00:00 Gray Catbird             2
+## 5 ANTI-0007 2015-05-25 00:00:00 Indigo Bunting           1
+## 6 ANTI-0007 2015-05-25 00:00:00 Mourning Dove            2</code></pre>
+<pre class="r"><code>birds4 &lt;- birds3 %&gt;% group_by(Common_Name) %&gt;% summarize(Range = max(Sightings) - 
+    min(Sightings)) %&gt;% arrange(desc(Range))
+head(birds4)</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   Common_Name          Range
+##   &lt;chr&gt;                &lt;int&gt;
+## 1 European Starling      159
+## 2 Cedar Waxwing           80
+## 3 Bobolink                55
+## 4 Red-winged Blackbird    49
+## 5 Brown-headed Cowbird    30
+## 6 Common Grackle          27</code></pre>
+<pre class="r"><code>change_birds &lt;- birds4 %&gt;% filter(Range &gt; 20) %&gt;% pull(Common_Name)</code></pre>
+<p>Taking a look at the other variables I have avaliable, it may be reasonable to ask whether weather is associated with duration of each survey. To look at this, I will calculate the mean visit length in minutes after grouping the dataset by weather type. Taking a look at this variable, there doesn’t actually seem to be much weather bias. On average, the observer only surveyed 0.9 minutes more when it was clear vs. when it was raining.</p>
+<pre class="r"><code>birds %&gt;% group_by(Sky) %&gt;% filter(!is.na(Sky)) %&gt;% summarize(Avg_Survey_Duration = mean(time_elapsed, 
+    na.rm = T))</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   Sky                 Avg_Survey_Duration
+##   &lt;chr&gt;                             &lt;dbl&gt;
+## 1 Clear or Few Clouds                11.0
+## 2 Cloudy/Overcast                    10.6
+## 3 Fog                                11.1
+## 4 Mist/Drizzle                       11.0
+## 5 Partly Cloudy                      10.9
+## 6 Rain Showers                       10.1</code></pre>
+<p>Zooming out a bit, I will now create a correlation matrix from certain numeric variables. My numeric ID values are not ordinal and thus would not make sense in a correlation matrix, so I will leave them out of this analysis using <em>select</em>. I then drop NAs and scale the dataset before running it through a covariance function (correlation is scaled covariance). Most of these variables, as I would expect, are not correlated with one another, save for “Year” and “time_elapsed”, which have a correlation coefficient of -0.48. Observers may, on average, be spending less time observing as the years go on.</p>
+<pre class="r"><code>birds %&gt;% select(Year, Visit, Temperature, Humidity, time_elapsed) %&gt;% 
+    drop_na %&gt;% scale() %&gt;% cov() %&gt;% round(2)</code></pre>
+<pre><code>##               Year Visit Temperature Humidity time_elapsed
+## Year          1.00  0.16        0.08     0.09        -0.48
+## Visit         0.16  1.00        0.33     0.14        -0.02
+## Temperature   0.08  0.33        1.00     0.08        -0.02
+## Humidity      0.09  0.14        0.08     1.00         0.03
+## time_elapsed -0.48 -0.02       -0.02     0.03         1.00</code></pre>
+<p>Now, I’d like to see if any of the species spotted prefer hotter-feeling or cooler-feeling weather. To achieve this, I’ll find the average heat index at which each species is usually spotted with <em>group_by()</em> and <em>summarize()</em>. I can scale these values to reflect preference for heat or cold. This returns various birds, such as the Ring-Billed Gull, as having a preference for colder-than-average weather, while others, such as the Snowy Egret, have preferences for warmer-than-average weather.</p>
+<pre class="r"><code>birds &lt;- birds %&gt;% mutate(heat_index = heat.index(t = Temperature, 
+    rh = Humidity))
+# average heat index for each species
+head(birds %&gt;% drop_na(heat_index) %&gt;% group_by(Common_Name) %&gt;% 
+    summarize(Avg_heat_index = mean(heat_index)))</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   Common_Name        Avg_heat_index
+##   &lt;chr&gt;                       &lt;dbl&gt;
+## 1 Acadian Flycatcher           20.8
+## 2 Alder Flycatcher             16  
+## 3 American Bittern             24  
+## 4 American Crow                20.8
+## 5 American Goldfinch           21.7
+## 6 American Kestrel             21.3</code></pre>
+<pre class="r"><code># scaled average heat index
+head(birds %&gt;% drop_na(heat_index) %&gt;% group_by(Common_Name) %&gt;% 
+    summarize(Scaled_heat_index = mean(heat_index)) %&gt;% mutate_if(is.numeric, 
+    scale))</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   Common_Name        Scaled_heat_index[,1]
+##   &lt;chr&gt;                              &lt;dbl&gt;
+## 1 Acadian Flycatcher                 0.250
+## 2 Alder Flycatcher                  -1.76 
+## 3 American Bittern                   1.56 
+## 4 American Crow                      0.217
+## 5 American Goldfinch                 0.601
+## 6 American Kestrel                   0.439</code></pre>
+<p>I also have data on which species are on a watchlist and when. This could inform a statistic describing how threatened a species is. To do this, I’ll select the columns “Year”, “Common_Name”, and “PIF_Watchlist_Status”,removing any duplicates. I will then group by “Common_Name” and find the sum of watchlist status boolean values. It seems the warblers have spent a particularly long time on the watchlist. I’ll also make a vector of bird names that have spent any time on the watchlist at all.</p>
+<pre class="r"><code>birds5 &lt;- birds %&gt;% select(Year, Common_Name, PIF_Watchlist_Status) %&gt;% 
+    distinct() %&gt;% group_by(Common_Name) %&gt;% summarize(Years_on_watchlist = sum(PIF_Watchlist_Status)) %&gt;% 
+    arrange(desc(Years_on_watchlist))
+head(birds5)</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   Common_Name          Years_on_watchlist
+##   &lt;chr&gt;                             &lt;int&gt;
+## 1 Kentucky Warbler                     12
+## 2 Prairie Warbler                      12
+## 3 Wood Thrush                          12
+## 4 Cerulean Warbler                     11
+## 5 Prothonotary Warbler                 11
+## 6 Worm-eating Warbler                  11</code></pre>
+<pre class="r"><code>endangered_birds &lt;- birds5 %&gt;% filter(Years_on_watchlist &gt; 0) %&gt;% 
+    pull(Common_Name)</code></pre>
+<p>Last, I want to see if certain species are more likely to be spotted near the beginning of the survey. I’ll do this by grouping my dataset by “Common_name” and creating a summary statistic comparing number of observations where “Initial_Three_Min_Cnt” is true to total number of observations. Surprisingly, some species always show up within the first three minutes of observation.</p>
+<pre class="r"><code>head(birds %&gt;% group_by(Common_Name) %&gt;% drop_na(Initial_Three_Min_Cnt) %&gt;% 
+    summarize(Early_pct = sum(Initial_Three_Min_Cnt)/n()) %&gt;% 
+    arrange(desc(Early_pct)))</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   Common_Name          Early_pct
+##   &lt;chr&gt;                    &lt;dbl&gt;
+## 1 Blackburnian Warbler         1
+## 2 Chinese Pond-Heron           1
+## 3 Henslow&#39;s Sparrow            1
+## 4 Hooded Merganser             1
+## 5 Marsh Wren                   1
+## 6 Northwestern Crow            1</code></pre>
+</div>
+</div>
+<div id="visualization" class="section level2">
+<h2>3. Visualization</h2>
+<p>Now, I’m going to put my subset of “endangered” birds to use. To display which threatened birds the National Capital Region is home to, I created a stacked bar plot representing the total count across all locations of each species on the PIF watchlist.</p>
+<pre class="r"><code>birds %&gt;% filter(Common_Name == endangered_birds, Year != 2018) %&gt;% 
+    group_by(Year, Common_Name) %&gt;% count %&gt;% ggplot(aes(x = Year)) + 
+    geom_bar(stat = &quot;identity&quot;, aes(y = n, fill = Common_Name), 
+        position = &quot;stack&quot;) + labs(fill = &quot;Common Name&quot;) + ggtitle(&quot;Yearly Count of PIF Watchlist Birds Across National Capital Region&quot;) + 
+    ylab(&quot;Number of Observations&quot;) + scale_x_continuous(breaks = seq(2007, 
+    2017, by = 1)) + scale_fill_brewer(palette = &quot;Paired&quot;) + 
+    theme_minimal()</code></pre>
+<pre><code>## Warning in Common_Name == endangered_birds: longer object length is not a
+## multiple of shorter object length</code></pre>
+<p><img src="/.EDAWriteup_files/figure-html/birdchangeplot-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>It seems that the wood thrush makes up a considerable proportion of this locality’s threatened bird population (these parks may be a popular location for bird-watchers hoping to see a wood thrush). However, the observed wood thrush population has been decreasing in recent years, which may be an topic of concern for both conservation and tourism in the region. On the contrary, the only species which has become increasingly common is the prairie warbler. While no general trends in total threatened bird population size can be observed here, it may be wise for park staff to examine population dips in 2012 and 2016 to determine their underlying cause.</p>
+<p>Next, I will take a look at the degree to which weather might affect number of observations for each survey event. Each survey event will be coded by a new variable, “Survey,” which is a union of the date and plot of a survey. I will plot the number of observations for eaach of these surveys against I’ll also plot the mean number of observations total for each weather condition. I will also color each point according to its “Disturbance” value, or the effect that the observer thought the weather had on the accuracy of the survey. One extreme data point was cut off to allow for proper scaling of the plot.</p>
+<pre class="r"><code>birdsplot &lt;- birds %&gt;% select(Date, Sky, Plot_Name, Disturbance) %&gt;% 
+    drop_na() %&gt;% unite(&quot;Survey&quot;, c(Plot_Name, Date), sep = &quot;_&quot;) %&gt;% 
+    group_by(Disturbance, Sky, Survey) %&gt;% count(Survey) %&gt;% 
+    arrange(Survey)
+
+birdsplot$Disturbance &lt;- factor(birdsplot$Disturbance, levels = c(&quot;No effect on count&quot;, 
+    &quot;Slight effect on count&quot;, &quot;Moderate effect on count&quot;, &quot;Serious effect on count&quot;))
+
+ggplot(birdsplot, aes(x = Sky)) + geom_point(aes(y = n, color = Disturbance), 
+    position = &quot;jitter&quot;) + geom_point(stat = &quot;summary&quot;, fun.y = mean, 
+    aes(y = n), size = 5, color = &quot;orange&quot;) + xlab(&quot;Weather Conditions&quot;) + 
+    ylab(&quot;Number of Observations&quot;) + ggtitle(&quot;Number of Observations per Survey Under Different Weather Conditions&quot;) + 
+    scale_y_continuous(limits = c(0, 100)) + labs(color = &quot;Weather Effect on Count&quot;) + 
+    theme_dark() + scale_color_brewer(palette = &quot;Blues&quot;) + theme(plot.title = element_text(hjust = 0.4), 
+    axis.text.x = element_text(angle = 30, hjust = 1))</code></pre>
+<pre><code>## Warning: Removed 1 rows containing non-finite values (stat_summary).</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
+<p><img src="/.EDAWriteup_files/figure-html/weatherplot-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>The observation numbers on poor weather surveys seem to have less spread than the number of observations on clearer day surveys, indicating either that better weather allowed observers to make more observations. The mean value of observations, however, is extremely similar between all conditions, indicating that birds were observable regardless of weather. Supporting this, the proportionality and spread of disturbance variables within each sky condition seem very similar. Perhaps it was not the weather itself, but another factor such as observer comfort affecting the disturbance judgement.</p>
+</div>
+<div id="principal-component-analysis" class="section level2">
+<h2>4. Principal Component Analysis</h2>
+<p>In the final segment of this analysis, I will determine meaningful variance relationships between my numeric variables by creating a PCA. As explained above alongside my correlation matrix, this analysis will not include numeric ID codes. I will also create an “Index” identifier that is unique for each observation.</p>
+<pre class="r"><code>bird_nums1 &lt;- birds %&gt;% mutate(Index = row_number()) %&gt;% select(Year, 
+    Visit, Temperature, Humidity, time_elapsed, Index) %&gt;% drop_na()
+bird_nums2 &lt;- bird_nums1 %&gt;% select(-Index) %&gt;% scale()
+rownames(bird_nums2) &lt;- bird_nums1$Index
+bird_pca &lt;- princomp(bird_nums2)
+summary(bird_pca, loadings = T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3    Comp.4     Comp.5
+## Standard deviation     1.2617330 1.1405288 0.9746587 0.8137327 0.70360760
+## Proportion of Variance 0.3183966 0.2601633 0.1899934 0.1324332 0.09901351
+## Cumulative Proportion  0.3183966 0.5785598 0.7685533 0.9009865 1.00000000
+## 
+## Loadings:
+##              Comp.1 Comp.2 Comp.3 Comp.4 Comp.5
+## Year          0.604  0.352                0.704
+## Visit         0.444 -0.491 -0.166  0.703 -0.203
+## Temperature   0.372 -0.506 -0.402 -0.663       
+## Humidity      0.222 -0.318  0.894 -0.187 -0.125
+## time_elapsed -0.501 -0.527         0.155  0.666</code></pre>
+<p>My first task is to decide how many principal components to keep. Component 4 is the first to achieve a cumulative proportion of variance explained that is greater than 80%, so I will keep principal components 1-4. By interpreting the provided loadings for each component, I can then interpret the meaning behind each PC. These meanings should be taken with a grain of salt, however, given that realistically these variables are probably not incredibly interrelated. Scoring high on pricipal component 1 would mean having a longer survey but in an earlier year and visit, and at cooler temperatures and humidity.This could be seen as the early-month, early-year, short-visit metric. Scoring high on principal component 2 would mean surveying at a later year, but earlier in the year, at a lower temperature, humidity, and a shorter amount of time. It can be seen as the later-year, early/cool-month, short-visit metric. Scoring high on component 3 would mean visiting later in the year, with high temperatures but low humidity. Finally, scoring high on component 4 would mean a later visit with a longer survey that happens at cold temperature and low humidity.</p>
+<pre class="r"><code>ggplot() + geom_point(aes(bird_pca$scores[, 1], bird_pca$scores[, 
+    2])) + xlab(&quot;PC1&quot;) + ylab(&quot;PC2&quot;)</code></pre>
+<p><img src="/.EDAWriteup_files/figure-html/PCA2-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>Name &lt;- bird_nums1$Index
+head(bird_pca$scores %&gt;% as.data.frame %&gt;% cbind(Name, .) %&gt;% 
+    top_n(1, Comp.1))</code></pre>
+<pre><code>##     Name Comp.1   Comp.2  Comp.3    Comp.4    Comp.5
+## 1 132386 9.9519 11.63365 -1.3322 -3.888363 -14.07837
+## 2 132387 9.9519 11.63365 -1.3322 -3.888363 -14.07837
+## 3 132388 9.9519 11.63365 -1.3322 -3.888363 -14.07837
+## 4 132389 9.9519 11.63365 -1.3322 -3.888363 -14.07837
+## 5 132390 9.9519 11.63365 -1.3322 -3.888363 -14.07837
+## 6 132391 9.9519 11.63365 -1.3322 -3.888363 -14.07837</code></pre>
+<pre class="r"><code>head(bird_pca$scores %&gt;% as.data.frame %&gt;% cbind(Name, .) %&gt;% 
+    top_n(1, wt = desc(Comp.1)))</code></pre>
+<pre><code>##     Name    Comp.1    Comp.2   Comp.3   Comp.4   Comp.5
+## 1 106815 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 2 106816 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 3 106817 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 4 106818 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 5 106819 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 6 106820 -12.01066 -13.57615 2.207033 3.662171 14.19685</code></pre>
+<pre class="r"><code>bird_nums1 %&gt;% filter(Index %in% c(106815, 106816, 106817))</code></pre>
+<pre><code>##   Year Visit Temperature Humidity time_elapsed  Index
+## 1 2008     2        21.2       96           78 106815
+## 2 2008     2        21.2       96           78 106816
+## 3 2008     2        21.2       96           78 106817</code></pre>
+<pre class="r"><code>bird_nums1 %&gt;% filter(Index %in% c(132386, 132387, 132388))</code></pre>
+<pre><code>##   Year Visit Temperature Humidity time_elapsed  Index
+## 1 2012     1        20.4       73          -50 132386
+## 2 2012     1        20.4       73          -50 132387
+## 3 2012     1        20.4       73          -50 132388</code></pre>
+<p>I’ll start by looking at plot 1, where a few points score high on PC1 and low on PC2. Upon further inspection, these were early-year, late-visit, high-temperature, high-humidity, long-visit observations. This is consistent with a high PC1 score and low PC2 score on all measures but humidity. To confirm, items that scored low on PC1 had the opposite attributes (including a negative time_elapsed, the result of an entry error in the dataset).</p>
+<pre class="r"><code>ggplot() + geom_point(aes(bird_pca$scores[, 1], bird_pca$scores[, 
+    3])) + xlab(&quot;PC1&quot;) + ylab(&quot;PC3&quot;)</code></pre>
+<p><img src="/.EDAWriteup_files/figure-html/PCA3-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>head(bird_pca$scores %&gt;% as.data.frame %&gt;% cbind(Name, .) %&gt;% 
+    top_n(1, Comp.3))</code></pre>
+<pre><code>##    Name    Comp.1    Comp.2   Comp.3   Comp.4      Comp.5
+## 1 38784 -3.258862 0.3902918 2.626984 1.568584 -0.09275915
+## 2 38785 -3.258862 0.3902918 2.626984 1.568584 -0.09275915
+## 3 38786 -3.258862 0.3902918 2.626984 1.568584 -0.09275915
+## 4 38787 -3.258862 0.3902918 2.626984 1.568584 -0.09275915
+## 5 38788 -3.258862 0.3902918 2.626984 1.568584 -0.09275915
+## 6 38789 -3.258862 0.3902918 2.626984 1.568584 -0.09275915</code></pre>
+<pre class="r"><code>head(bird_pca$scores %&gt;% as.data.frame %&gt;% cbind(Name, .) %&gt;% 
+    top_n(1, wt = desc(Comp.3)))</code></pre>
+<pre><code>##     Name    Comp.1    Comp.2    Comp.3    Comp.4    Comp.5
+## 1 115787 -0.260686 0.3769264 -5.090898 -1.965793 0.5672747
+## 2 115788 -0.260686 0.3769264 -5.090898 -1.965793 0.5672747
+## 3 115789 -0.260686 0.3769264 -5.090898 -1.965793 0.5672747
+## 4 115790 -0.260686 0.3769264 -5.090898 -1.965793 0.5672747
+## 5 115791 -0.260686 0.3769264 -5.090898 -1.965793 0.5672747
+## 6 115792 -0.260686 0.3769264 -5.090898 -1.965793 0.5672747</code></pre>
+<pre class="r"><code>bird_nums1 %&gt;% filter(Index %in% c(115787, 115788, 115789))</code></pre>
+<pre><code>##   Year Visit Temperature Humidity time_elapsed  Index
+## 1 2012     1          35     0.54           10 115787
+## 2 2012     1          35     0.54           10 115788
+## 3 2012     1          35     0.54           10 115789</code></pre>
+<pre class="r"><code>bird_nums1 %&gt;% filter(Index %in% c(38784, 38785, 38786))</code></pre>
+<pre><code>##   Year Visit Temperature Humidity time_elapsed Index
+## 1 2008     1         4.6       97           16 38784
+## 2 2008     1         4.6       97           16 38785
+## 3 2008     1         4.6       97           16 38786</code></pre>
+<p>I will now look at plot 2, where I can view that items score high and low on component 3 when plotted against component 1. High scorers have a high temperature and low humidity metric compared to low scorers, as expected.</p>
+<pre class="r"><code>ggplot() + geom_point(aes(bird_pca$scores[, 2], bird_pca$scores[, 
+    3])) + xlab(&quot;PC2&quot;) + ylab(&quot;PC3&quot;)</code></pre>
+<p><img src="/.EDAWriteup_files/figure-html/PCA4-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>head(bird_pca$scores %&gt;% as.data.frame %&gt;% cbind(Name, .) %&gt;% 
+    top_n(1, wt = desc(Comp.2)))</code></pre>
+<pre><code>##     Name    Comp.1    Comp.2   Comp.3   Comp.4   Comp.5
+## 1 106815 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 2 106816 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 3 106817 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 4 106818 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 5 106819 -12.01066 -13.57615 2.207033 3.662171 14.19685
+## 6 106820 -12.01066 -13.57615 2.207033 3.662171 14.19685</code></pre>
+<pre class="r"><code>bird_nums1 %&gt;% filter(Index %in% c(106815, 106816, 106817))</code></pre>
+<pre><code>##   Year Visit Temperature Humidity time_elapsed  Index
+## 1 2008     2        21.2       96           78 106815
+## 2 2008     2        21.2       96           78 106816
+## 3 2008     2        21.2       96           78 106817</code></pre>
+<p>Finally, PCA 3 shows component 2 against component 3. There are a few low scorers along component 2. Opposite of the predicted high scorers on PC2, these points have early year, late visit, high humidity, and high time elapsed.</p>
+</div>
+</div>
+
+  </article>
+</section>
+
+
+      </div>
+      
+        <footer class="footer">
+  <section class="container centered">
+    <div class="about">
+    
+    <ul class="social-list">
+      
+        <li class="social-item">
+          <a href="https://github.com/sccampbell02/" aria-label="Github" >
+            
+              <i class="fab fa-github" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="https://twitter.com/ansccampbell/" aria-label="Twitter" >
+            
+              <i class="fab fa-twitter" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="https://www.linkedin.com/in/sarah-campbell-83024a134/" aria-label="LinkedIn" >
+            
+              <i class="fab fa-linkedin" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="/" aria-label="ResearchGate" >
+            
+              <i class="fab fa-researchgate" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="mailto:sarahcsemail@gmail.com" aria-label="Email" >
+            
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+    </ul>
+    
+  
+     © 2019    ·  Powered by <a href="https://gohugo.io/"> Hugo</a> & <a href="https://github.com/naro143/hugo-coder-portfolio">CoderPortfolio</a>. 
+    </div>
+  </section>
+</footer>
+
+      
+    </main>
+
+    
+
+  <script src="/js/app.js"></script>
+  
+  </body>
+</html>

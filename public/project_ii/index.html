@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Sarah Campbell">
+    <meta name="description" content="/.">
+    <meta name="keywords" content="neuroscience,research,personal">
+
+    <meta property="og:site_name" content="Sarah Campbell">
+    <meta property="og:title" content="
+  Linear Modeling - Sarah Campbell
+">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/./project_ii/">
+    <meta property="og:image" content="/.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="/./project_ii/">
+    <meta name="twitter:image" content="/.">
+
+    <base href="/./project_ii/">
+    <title>
+  Linear Modeling - Sarah Campbell
+</title>
+
+    <link rel="canonical" href="/./project_ii/">
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:400,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/normalize.min.css">
+    <link rel="stylesheet" href="/css/style.min.css">
+
+    
+
+    
+
+    <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+    
+      <link rel="alternate" href="/./index.xml" type="application/rss+xml" title="Sarah Campbell">
+      <link href="/./index.xml" rel="feed" type="application/rss+xml" title="Sarah Campbell" />
+    
+
+    <meta name="generator" content="Hugo 0.61.0" />
+  </head>
+
+  <body class="">
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">Sarah Campbell</a>
+    <input type="checkbox" id="menu-control"/>
+    <label class="menu-mobile  float-right " for="menu-control">
+      <span class="btn-mobile  float-right ">&#9776;</span>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/about">About</a>
+            </li>
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/posts">Blog</a>
+            </li>
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/projects">Projects</a>
+            </li>
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/CV">CV</a>
+            </li>
+          
+        
+        
+      </ul>
+    </label>
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container page">
+  <article>
+    <header>
+      <h1>Linear Modeling</h1>
+    </header>
+
+    
+
+
+<p><em>11/26/2019</em></p>
+<div id="modeling-testing-and-predicting-hawk-data" class="section level1">
+<h1>Modeling, Testing, and Predicting Hawk Data</h1>
+<div id="introduction" class="section level2">
+<h2>0. Introduction</h2>
+<pre class="r"><code>data(Hawks)
+head(Hawks)</code></pre>
+<pre><code>##   Month Day Year CaptureTime ReleaseTime  BandNumber Species Age Sex Wing
+## 1     9  19 1992       13:30               877-76317      RT   I      385
+## 2     9  22 1992       10:30               877-76318      RT   I      376
+## 3     9  23 1992       12:45               877-76319      RT   I      381
+## 4     9  23 1992       10:50               745-49508      CH   I   F  265
+## 5     9  27 1992       11:15              1253-98801      SS   I   F  205
+## 6     9  28 1992       11:25             1207-55910       RT   I      412
+##   Weight Culmen Hallux Tail StandardTail Tarsus WingPitFat KeelFat Crop
+## 1    920   25.7   30.1  219           NA     NA         NA      NA   NA
+## 2    930     NA     NA  221           NA     NA         NA      NA   NA
+## 3    990   26.7   31.3  235           NA     NA         NA      NA   NA
+## 4    470   18.7   23.5  220           NA     NA         NA      NA   NA
+## 5    170   12.5   14.3  157           NA     NA         NA      NA   NA
+## 6   1090   28.5   32.2  230           NA     NA         NA      NA   NA</code></pre>
+<p>The Hawks dataset from the Stats2Data package includes several measurements taken on three species of hawks captured by Cornell College students at Lake McBride in Iowa. It is a modified version of the original dataset in that it only includes species that were observed at least ten times.There are 19 variables total in this dataset; the ones useful to my analysis include:</p>
+<ul>
+<li><p><strong>Species</strong>, hawk species coded as RT (Red-tailed hawk), CH (Cooper’s hawk), or SS (Sharp-shinned hawk).</p></li>
+<li><p><strong>Age</strong>, hawk age range coded as A (adult) or I (immature).</p></li>
+<li><p><strong>Sex</strong>, the hawk’s sex, M or F.</p></li>
+<li><p><strong>Wing</strong>, the wing length of the hawk in mm.</p></li>
+<li><p><strong>Weight</strong>, the weight of the hawk in grams.</p></li>
+<li><p><strong>Culmen</strong>, the upper beak length of the hawk in mm.</p></li>
+<li><p><strong>Hallux</strong>, the length of the hawk’s killing talon in mm.</p></li>
+<li><p><strong>Tail</strong>, the length of the hawk’s tail in mm, measured using a technique invented at the MacBride Raptor Center.</p></li>
+<li><p><strong>StandardTail</strong>, the length of the hawk’s tail in mm, measured using standard protocol.</p></li>
+<li><p><strong>Tarsus</strong>, the length of one of the hawk’s foot bones in mm.</p></li>
+<li><p><strong>WingPitFat</strong>, the amount of fat in the hawk’s wing pit, estimated on a scale from 0-3.</p></li>
+<li><p><strong>KeelFat</strong>, the amount of fat on the hawk’s breastbone, estimated on a scale from 0-4.</p></li>
+<li><p><strong>Crop</strong>, a binary variable describing the presence of food in the bird’s crop (1=full, 0=empty).</p></li>
+</ul>
+<p>It is likely that several of these numeric variables co-vary, and are perhaps predictors of a hawk’s species or age.</p>
+</div>
+<div id="hypothesis-testing" class="section level2">
+<h2>1. Hypothesis Testing</h2>
+<p>I am interested in determining whether the means any of my interesting numeric variables differ across species. I’ll start by creating a modified version of the dataset that only includes species and continuous numeric variables and omits incomplete rows. The WingPitFat and KeelFat variables were omitted due to their high proportion of NA values.</p>
+<pre class="r"><code>Hawknums &lt;- dplyr::select(Hawks, Species, Wing, Weight, Culmen, 
+    Hallux, Tail, StandardTail, Tarsus)
+Hawknums &lt;- Hawknums %&gt;% drop_na</code></pre>
+<p>Now, I will run a MANOVA to identify which numeric variables harbor significant differences between species. Due to the size and scope of the dataset the assumption of randomness is likely met.</p>
+<pre class="r"><code>ggplot(Hawknums, aes(x = Wing, y = Weight)) + geom_point(alpha = 0.5) + 
+    geom_density_2d(h = 500) + coord_fixed() + facet_wrap(~Species)</code></pre>
+<p><img src="/.Project_II_files/figure-html/MANOVA_assumptions-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(Hawknums, aes(x = Culmen, y = Hallux)) + geom_point(alpha = 0.5) + 
+    geom_density_2d(h = 20) + coord_fixed() + facet_wrap(~Species)</code></pre>
+<p><img src="/.Project_II_files/figure-html/MANOVA_assumptions-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>covmats &lt;- Hawknums %&gt;% group_by(Species) %&gt;% do(covs = cov(.[2:8]))
+for (i in 1:3) {
+    print(covmats$covs[i])
+}</code></pre>
+<pre><code>## [[1]]
+##                     Wing      Weight      Culmen     Hallux       Tail
+## Wing          4351.26786  20540.0357  258.064286  63.392857 1615.55357
+## Weight       20540.03571 100979.6429 1303.671429 241.914286 7232.17857
+## Culmen         258.06429   1303.6714   25.760000  -4.615714  116.39286
+## Hallux          63.39286    241.9143   -4.615714  14.448571   34.10714
+## Tail          1615.55357   7232.1786  116.392857  34.107143  911.26786
+## StandardTail   403.25000   1631.2143   -7.200000  64.371429  228.67857
+## Tarsus        -794.46429  -4353.4857  -42.848571 -10.930000 -164.37857
+##              StandardTail      Tarsus
+## Wing            403.25000  -794.46429
+## Weight         1631.21429 -4353.48571
+## Culmen           -7.20000   -42.84857
+## Hallux           64.37143   -10.93000
+## Tail            228.67857  -164.37857
+## StandardTail    316.50000   -48.71429
+## Tarsus          -48.71429   279.08857
+## 
+## [[1]]
+##                    Wing     Weight     Culmen     Hallux       Tail
+## Wing         1147.83536  6038.6026  86.988057  11.059784  250.74224
+## Weight       6038.60256 43510.6937 621.558907 141.701282 1980.77058
+## Culmen         86.98806   621.5589  14.048097   3.983239   38.02955
+## Hallux         11.05978   141.7013   3.983239   4.451997   11.69217
+## Tail          250.74224  1980.7706  38.029555  11.692173  162.98516
+## StandardTail  135.72335  1153.9157  28.205061  14.440621  106.87922
+## Tarsus         14.77591   334.4646   7.731336   7.642429   24.03401
+##              StandardTail     Tarsus
+## Wing            135.72335  14.775911
+## Weight         1153.91565 334.464575
+## Culmen           28.20506   7.731336
+## Hallux           14.44062   7.642429
+## Tail            106.87922  24.034008
+## StandardTail    133.34143  28.007085
+## Tarsus           28.00709  32.413239
+## 
+## [[1]]
+##                     Wing     Weight      Culmen      Hallux        Tail
+## Wing         1951.957672  8516.1217 159.5042328   3.9947090  971.915344
+## Weight       8516.121693 40924.2381 739.7230159 -24.1246032 4318.447090
+## Culmen        159.504233   739.7230  14.8948545   0.4063624   86.583466
+## Hallux          3.994709   -24.1246   0.4063624   2.5329497    7.162566
+## Tail          971.915344  4318.4471  86.5834656   7.1625661  615.654762
+## StandardTail   30.756614  -190.5503   3.4798942  18.5899471   74.957672
+## Tarsus         -5.856614  -122.6571  -0.7493386   4.8409788   13.003439
+##              StandardTail       Tarsus
+## Wing            30.756614   -5.8566138
+## Weight        -190.550265 -122.6571429
+## Culmen           3.479894   -0.7493386
+## Hallux          18.589947    4.8409788
+## Tail            74.957672   13.0034392
+## StandardTail   163.693122   41.8846561
+## Tarsus          41.884656   13.6371958</code></pre>
+<p>Bivariate plots comparing wing length/weight and culmen/hallux indicate that MANOVA assumptions are not met for all variables: the former depicts multicollinearity and the latter depicts extreme outliers in the dataset. Multivariate normality is also violated in the first plot, and covariance matricies show a lack of homogeneity. In spite of this, I will proceed with the analysis.</p>
+<pre class="r"><code>Hawkman &lt;- manova(cbind(Wing, Weight, Culmen, Hallux, Tail, StandardTail, 
+    Tarsus) ~ Species, data = Hawknums)
+summary(Hawkman)</code></pre>
+<pre><code>##           Df Pillai approx F num Df den Df    Pr(&gt;F)    
+## Species    2 1.4141   23.103     14    134 &lt; 2.2e-16 ***
+## Residuals 72                                            
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The MANOVA indicates a mean difference in one of the tested variables; <em>Pillai Trace</em> = 1.41, <em>pseudo F</em>(14,134) = 23.1, <em>p</em> &lt; 0.001.</p>
+<pre class="r"><code>summary.aov(Hawkman)</code></pre>
+<pre><code>##  Response Wing :
+##             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Species      2 484287  242143  137.52 &lt; 2.2e-16 ***
+## Residuals   72 126779    1761                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response Weight :
+##             Df   Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Species      2 11368154 5684077   118.1 &lt; 2.2e-16 ***
+## Residuals   72  3465218   48128                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response Culmen :
+##             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Species      2 3410.8  1705.4  109.99 &lt; 2.2e-16 ***
+## Residuals   72 1116.3    15.5                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response Hallux :
+##             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Species      2 5283.3  2641.6  561.54 &lt; 2.2e-16 ***
+## Residuals   72  338.7     4.7                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response Tail :
+##             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Species      2  78364   39182   96.63 &lt; 2.2e-16 ***
+## Residuals   72  29195     405                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response StandardTail :
+##             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Species      2 113784   56892  350.04 &lt; 2.2e-16 ***
+## Residuals   72  11702     163                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response Tarsus :
+##             Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Species      2 18499.8  9249.9  187.42 &lt; 2.2e-16 ***
+## Residuals   72  3553.5    49.4                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>1 - (0.95)^8</code></pre>
+<pre><code>## [1] 0.3365796</code></pre>
+<pre class="r"><code>0.05/8</code></pre>
+<pre><code>## [1] 0.00625</code></pre>
+<p>With a 33.7% chance of a Type I error, the bonferroni adjusted significance value was set to 0.006. Even with this adjustment ANOVAs suggested significant mean differences in wing length (<em>F</em>(2,72)=137.5), weight (<em>F</em>(2,72)=118.1), culmen length (<em>F</em>(2,72)=110.0), hallux length (<em>F</em>(2,72)=561.5), tail length (<em>F</em>(2,72)=96.63), standard tail length (<em>F</em>(2,72)=350.0), and tarsus length (<em>F</em>(2,72)=187.4) between species. <em>p</em>&lt;0.001 for all comparisons.</p>
+<pre class="r"><code>pairwise.t.test(Hawknums$Wing, Hawknums$Species, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  Hawknums$Wing and Hawknums$Species 
+## 
+##    CH      RT     
+## RT 1.6e-08 -      
+## SS 0.00015 &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(Hawknums$Weight, Hawknums$Species, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  Hawknums$Weight and Hawknums$Species 
+## 
+##    CH      RT     
+## RT 1.2e-08 -      
+## SS 0.0025  &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(Hawknums$Culmen, Hawknums$Species, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  Hawknums$Culmen and Hawknums$Species 
+## 
+##    CH      RT     
+## RT 1.8e-06 -      
+## SS 0.00011 &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(Hawknums$Hallux, Hawknums$Species, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  Hawknums$Hallux and Hawknums$Species 
+## 
+##    CH      RT     
+## RT &lt; 2e-16 -      
+## SS 4.3e-14 &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(Hawknums$Tail, Hawknums$Species, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  Hawknums$Tail and Hawknums$Species 
+## 
+##    CH      RT     
+## RT 0.0017  -      
+## SS 7.5e-07 &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(Hawknums$StandardTail, Hawknums$Species, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  Hawknums$StandardTail and Hawknums$Species 
+## 
+##    CH      RT     
+## RT 5.8e-06 -      
+## SS &lt; 2e-16 &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(Hawknums$Tarsus, Hawknums$Species, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  Hawknums$Tarsus and Hawknums$Species 
+## 
+##    CH      RT     
+## RT 3.3e-11 -      
+## SS 6.0e-05 &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>1 - 0.95^29</code></pre>
+<pre><code>## [1] 0.7740645</code></pre>
+<pre class="r"><code>0.05/29</code></pre>
+<pre><code>## [1] 0.001724138</code></pre>
+<p>With a 77.4% overall chance of a type I error, a bonferroni adjustment was made to the significance value, now 0.0017. Post-hoc pairwise t-tests indicated that sharp-shinned and red-tailed hawks differed significantly on all measures, cooper’s and red-tailed hawks significantly differed on every measure except tail length, and cooper’s and sharp-shinned hawks on every measure except weight.</p>
+</div>
+<div id="randomization-test" class="section level2">
+<h2>2. Randomization Test</h2>
+<p>I will now determine whether there is a significant mean difference in weight between male and female birds using a randomization test. Under the null hypothesis that there is no significant mean difference in weight between the two sexes, and the alternative hypothesis that such a significant mean difference does exist, I permute the data to create a sampling distribution of mean differences.</p>
+<pre class="r"><code>Hawkrt &lt;- dplyr::select(Hawks, Sex, Weight)
+Hawkrt &lt;- Hawkrt %&gt;% filter(Sex != &quot;&quot;) %&gt;% drop_na()
+Hawkrt %&gt;% group_by(Sex) %&gt;% summarize(mean(Weight))</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   Sex   `mean(Weight)`
+##   &lt;fct&gt;          &lt;dbl&gt;
+## 1 F               257.
+## 2 M               174.</code></pre>
+<pre class="r"><code>256.9882 - 173.5478</code></pre>
+<pre><code>## [1] 83.4404</code></pre>
+<pre class="r"><code>rand_dist &lt;- vector()
+for (i in 1:5000) {
+    new &lt;- data.frame(weight = sample(Hawkrt$Weight), sex = Hawkrt$Sex)
+    rand_dist[i] &lt;- mean(new[new$sex == &quot;F&quot;, ]$weight) - mean(new[new$sex == 
+        &quot;M&quot;, ]$weight)
+}
+mean(rand_dist &gt; 83.44) * 2</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>The probability of getting the true mean difference within this randomized dataset is 0, indicating that I can reject the null hypothesis.</p>
+<pre class="r"><code>{
+    hist(rand_dist, main = &quot;&quot;, ylab = &quot;&quot;, xlim = c(-60, 90))
+    abline(v = 83.44, col = &quot;red&quot;)
+}</code></pre>
+<p><img src="/.Project_II_files/figure-html/rand_hist-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>A histogram of the sampling distribution indicates that the true mean value is not within the range of the permuted dataset, confirming my conclusion.</p>
+</div>
+<div id="linear-regression-model" class="section level2">
+<h2>3. Linear Regression Model</h2>
+<p>To determine whether wing length can be predictd by tail length or age, I will employ a linear regression model.</p>
+<pre class="r"><code>hawkmean &lt;- Hawks %&gt;% filter(!is.na(Wing), !is.na(Tail)) %&gt;% 
+    mutate(wing_c = Wing - mean(Wing, na.omit = T), tail_c = Tail - 
+        mean(Tail, na.omit = T))
+hawk_lm &lt;- lm(wing_c ~ tail_c * Age, data = hawkmean)
+coeftest(hawk_lm)</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##              Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)  7.555633   2.841090  2.6594  0.007966 ** 
+## tail_c       2.440467   0.080978 30.1373 &lt; 2.2e-16 ***
+## AgeI        -9.694046   3.253468 -2.9796  0.002964 ** 
+## tail_c:AgeI -0.127820   0.091415 -1.3982  0.162385    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>At mean tail length, immature hawks have wings that are 9.69 mm shorter than those of adult hawks, on average. In adult hawks, for every 1 mm increase in tail length, there is an average 2.44 mm increase in wing length. The slope of tail length vs. wing length in immature hawks is 0.13 units smaller than the slope in adult hawks.</p>
+<pre class="r"><code>newdat &lt;- hawkmean
+newdat$Age &lt;- rep(&quot;I&quot;, length(newdat$Age))
+newdat$pred1 &lt;- predict(hawk_lm, newdat)
+newdat$Age &lt;- rep(&quot;A&quot;, length(newdat$Age))
+newdat$pred2 &lt;- predict(hawk_lm, newdat)
+
+ggplot(hawkmean, aes(x = tail_c, y = wing_c)) + geom_point() + 
+    geom_line(data = newdat, aes(y = pred1), color = &quot;red&quot;) + 
+    geom_line(data = newdat, aes(y = pred2), color = &quot;blue&quot;)</code></pre>
+<p><img src="/.Project_II_files/figure-html/glm_plot-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>A regression plot displays this separation between predicted wing length in adult and immature hawks.</p>
+<pre class="r"><code>hawkmean %&gt;% ggplot(aes(tail_c, wing_c)) + geom_point() + geom_smooth(method = &quot;lm&quot;, 
+    se = F)</code></pre>
+<p><img src="/.Project_II_files/figure-html/glm_assumption-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>resids &lt;- hawk_lm$residuals
+fitvals &lt;- hawk_lm$fitted.values
+ggplot() + geom_histogram(aes(resids), bins = 20)</code></pre>
+<p><img src="/.Project_II_files/figure-html/glm_assumption-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bptest(hawk_lm)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  hawk_lm
+## BP = 6.3387, df = 3, p-value = 0.09625</code></pre>
+<p>The assumption of linearity is met, as is the assumption for independent observations and random sampling. The assumptions of normality and heteroskedasticity are not met.</p>
+<pre class="r"><code>coeftest(hawk_lm, vcov = vcovHC(hawk_lm))</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  7.555633   3.577707  2.1119  0.03497 *  
+## tail_c       2.440467   0.097182 25.1124  &lt; 2e-16 ***
+## AgeI        -9.694046   3.865933 -2.5076  0.01233 *  
+## tail_c:AgeI -0.127820   0.104187 -1.2268  0.22020    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(hawk_lm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = wing_c ~ tail_c * Age, data = hawkmean)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -302.126  -13.629    5.922   21.359  254.790 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  7.55563    2.84109   2.659  0.00797 ** 
+## tail_c       2.44047    0.08098  30.137  &lt; 2e-16 ***
+## AgeI        -9.69405    3.25347  -2.980  0.00296 ** 
+## tail_c:AgeI -0.12782    0.09142  -1.398  0.16239    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 41.37 on 903 degrees of freedom
+## Multiple R-squared:  0.8121, Adjusted R-squared:  0.8115 
+## F-statistic:  1301 on 3 and 903 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>With robust standard errors, there is a significant effect of tail length (<em>p</em>&lt;0.001) and age(<em>p</em>=0.01) on wing length, but the interaction term is not significant. While p values have increased in comparison to the original model, the same terms have remained significant. The model explains 81.21% of variation in the outcome.</p>
+</div>
+<div id="bootstrapped-standard-errors" class="section level2">
+<h2>4. Bootstrapped Standard Errors</h2>
+<pre class="r"><code>samp_distn &lt;- replicate(5000, {
+    boot_dat &lt;- hawkmean[sample(nrow(hawkmean), replace = TRUE), 
+        ]
+    fit &lt;- lm(wing_c ~ tail_c * Age, data = boot_dat)
+    coef(fit)
+})
+coeftest(hawk_lm)[, 1:2]</code></pre>
+<pre><code>##               Estimate Std. Error
+## (Intercept)  7.5556329 2.84108966
+## tail_c       2.4404671 0.08097828
+## AgeI        -9.6940456 3.25346800
+## tail_c:AgeI -0.1278202 0.09141528</code></pre>
+<pre class="r"><code>coeftest(hawk_lm, vcov = vcovHC(hawk_lm))[, 1:2]</code></pre>
+<pre><code>##               Estimate Std. Error
+## (Intercept)  7.5556329 3.57770665
+## tail_c       2.4404671 0.09718172
+## AgeI        -9.6940456 3.86593348
+## tail_c:AgeI -0.1278202 0.10418671</code></pre>
+<pre class="r"><code>samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept)     tail_c     AgeI tail_c:AgeI
+## 1    3.555695 0.09634591 3.821272   0.1030434</code></pre>
+<pre class="r"><code>samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% gather %&gt;% group_by(key) %&gt;% 
+    summarize(lower = quantile(value, 0.025), upper = quantile(value, 
+        0.975))</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   key           lower   upper
+##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)   0.377 14.3   
+## 2 AgeI        -17.0   -1.99  
+## 3 tail_c        2.25   2.63  
+## 4 tail_c:AgeI  -0.328  0.0789</code></pre>
+<p>The bootstrapped standard errors are larger than those of the original model but smaller than robust standard errors. All estimates fall within the 95% confidence interval for the bootstrapped model, giving significance to the interaction term in this model.</p>
+</div>
+<div id="logistic-regression" class="section level2">
+<h2>5. Logistic Regression</h2>
+<pre class="r"><code>hawkmean &lt;- hawkmean %&gt;% filter(!is.na(Hallux), !is.na(Species), 
+    !is.na(Culmen)) %&gt;% mutate(culmen_c = Culmen - mean(Culmen), 
+    hallux_c = Hallux - mean(Hallux), red = ifelse(Species == 
+        &quot;RT&quot;, 1, 0))
+hawk_log &lt;- glm(red ~ hallux_c + culmen_c, data = hawkmean, family = binomial)
+coeftest(hawk_log)</code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##             Estimate Std. Error z value  Pr(&gt;|z|)    
+## (Intercept) 0.661202   0.346162  1.9101   0.05612 .  
+## hallux_c    0.071182   0.018252  3.8998 9.625e-05 ***
+## culmen_c    1.023096   0.117518  8.7059 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(0.0808)</code></pre>
+<pre><code>## [1] 1.084154</code></pre>
+<pre class="r"><code>exp(0.96)</code></pre>
+<pre><code>## [1] 2.611696</code></pre>
+<p>Here, I run a logistic regression of being a red-tailed hawk on hallux and culmen size. One mm increase in hallux length significantly increases the odds of being a red-tailed hawk by e^0.08 or 108.4%, and one mm increase in culmen size increases the odds of being a red-tailed hawk by e^0.96 or 261.1%.</p>
+<pre class="r"><code>prob &lt;- predict(hawk_log, type = &quot;response&quot;)
+pred &lt;- ifelse(prob &gt; 0.5, 1, 0)
+table(truth = hawkmean$red, prediction = pred) %&gt;% addmargins</code></pre>
+<pre><code>##      prediction
+## truth   0   1 Sum
+##   0   322   5 327
+##   1     4 568 572
+##   Sum 326 573 899</code></pre>
+<pre class="r"><code>(236 + 320)/563</code></pre>
+<pre><code>## [1] 0.9875666</code></pre>
+<pre class="r"><code>320/322</code></pre>
+<pre><code>## [1] 0.9937888</code></pre>
+<pre class="r"><code>236/238</code></pre>
+<pre><code>## [1] 0.9915966</code></pre>
+<pre class="r"><code>320/325</code></pre>
+<pre><code>## [1] 0.9846154</code></pre>
+<p>According to the confusion matrix, this model has an Accuracy of 0.988, Sensitivity of 0.994, Specificity of 0.992, and Recall of 0.985.</p>
+<pre class="r"><code>hawkmean$logit &lt;- predict(hawk_log, type = &quot;link&quot;)
+hawkmean$RedTailed &lt;- ifelse(hawkmean$red == 1, &quot;Y&quot;, &quot;N&quot;)
+
+hawkmean %&gt;% ggplot() + geom_density(aes(logit, color = RedTailed, 
+    fill = RedTailed), alpha = 0.4) + theme(legend.position = c(0.85, 
+    0.85)) + geom_vline(xintercept = 0) + xlab(&quot;predictor (logit)&quot;)</code></pre>
+<p><img src="/.Project_II_files/figure-html/density-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>According to the density plot, a cutoff value of zero fairly accurately predicts whether a hawk was a red-tailed.</p>
+<pre class="r"><code>ROCplot &lt;- ggplot(hawkmean) + geom_roc(aes(d = red, m = prob), 
+    n.cuts = 0)
+ROCplot</code></pre>
+<p><img src="/.Project_II_files/figure-html/ROC-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.9981021</code></pre>
+<p>The ROCplot for this model and a high AUC of 0.998 indicate that this model is an extremely good predictor of a bird being a red-tailed hawk in this dataset.</p>
+<pre class="r"><code>class_diag &lt;- function(probs, truth) {
+    
+    tab &lt;- table(factor(probs &gt; 0.5, levels = c(&quot;FALSE&quot;, &quot;TRUE&quot;)), 
+        truth)
+    acc = sum(diag(tab))/sum(tab)
+    sens = tab[2, 2]/colSums(tab)[2]
+    spec = tab[1, 1]/colSums(tab)[1]
+    ppv = tab[2, 2]/rowSums(tab)[2]
+    
+    if (is.numeric(truth) == FALSE &amp; is.logical(truth) == FALSE) 
+        truth &lt;- as.numeric(truth) - 1
+    
+    # CALCULATE EXACT AUC
+    ord &lt;- order(probs, decreasing = TRUE)
+    probs &lt;- probs[ord]
+    truth &lt;- truth[ord]
+    
+    TPR = cumsum(truth)/max(1, sum(truth))
+    FPR = cumsum(!truth)/max(1, sum(!truth))
+    
+    dup &lt;- c(probs[-1] &gt;= probs[-length(probs)], FALSE)
+    TPR &lt;- c(0, TPR[!dup], 1)
+    FPR &lt;- c(0, FPR[!dup], 1)
+    
+    n &lt;- length(TPR)
+    auc &lt;- sum(((TPR[-1] + TPR[-n])/2) * (FPR[-1] - FPR[-n]))
+    
+    data.frame(acc, sens, spec, ppv, auc)
+}
+k = 10
+
+data1 &lt;- hawkmean[sample(nrow(hawkmean)), ]
+folds &lt;- cut(seq(1:nrow(hawkmean)), breaks = k, labels = F)
+
+diags &lt;- NULL
+for (i in 1:k) {
+    train &lt;- data1[folds != i, ]
+    test &lt;- data1[folds == i, ]
+    truth &lt;- test$red
+    
+    fit &lt;- glm(red ~ hallux_c + culmen_c, data = train, family = &quot;binomial&quot;)
+    probs &lt;- predict(fit, newdata = test, type = &quot;response&quot;)
+    
+    diags &lt;- rbind(diags, class_diag(probs, truth))
+}
+
+apply(diags, 2, mean)</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.9888889 0.9931835 0.9800285 0.9897927 0.9973399</code></pre>
+<p>After a 10-fold cross validation, the average out-of-sample accuracy is 0.988, sensitivity is 0.994, and ppv is 0.985.</p>
+</div>
+<div id="lasso-regression" class="section level2">
+<h2>6. Lasso Regression</h2>
+<pre class="r"><code>hawkmean2 &lt;- dplyr::select(hawkmean, Weight, Tail, Wing, Weight, 
+    Culmen, Hallux, Tail, Tarsus, Age, red)
+hawkmean2 &lt;- hawkmean2 %&gt;% drop_na()
+hawkfit &lt;- glm(red ~ -1 + Weight + Tail + Wing + Weight + Culmen + 
+    Hallux + Tail + Tarsus + Age, data = hawkmean2, family = &quot;binomial&quot;)
+x &lt;- model.matrix(hawkfit)
+x &lt;- scale(x)
+y &lt;- as.matrix(hawkmean2$red)
+cv2 &lt;- cv.glmnet(x, y, family = &quot;binomial&quot;)
+lasso &lt;- glmnet(x, y, family = &quot;binomial&quot;, lambda = cv2$lambda.1se)
+coef(cv2)</code></pre>
+<pre><code>## 9 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                      1
+## (Intercept) -0.1617324
+## Weight       0.3402904
+## Tail         .        
+## Wing         0.6046703
+## Culmen       .        
+## Hallux       1.8311461
+## Tarsus       0.8301217
+## AgeA         .        
+## AgeI         .</code></pre>
+<p>Considering all predictors (that were relevant and contained little NAs) of a bird being a red-tailed hawk, LASSO regression retains the variables Weight, Wing, Hallux, and Tarsus.</p>
+<pre class="r"><code>k = 10
+data1 &lt;- hawkmean2[sample(nrow(hawkmean2)), ]
+folds &lt;- cut(seq(1:nrow(hawkmean2)), breaks = k, labels = F)
+diags &lt;- NULL
+for (i in 1:k) {
+    train &lt;- data1[folds != i, ]
+    test &lt;- data1[folds == i, ]
+    truth &lt;- test$red
+    fit &lt;- glm(red ~ -1 + Weight + Wing + Hallux + Tarsus, data = train, 
+        family = &quot;binomial&quot;)
+    probs &lt;- predict(fit, newdata = test, type = &quot;response&quot;)
+    ## Test model on test set (save all k results)
+    diags &lt;- rbind(diags, class_diag(probs, truth))
+}
+diags %&gt;% summarize_all(mean)</code></pre>
+<pre><code>##         acc  sens      spec  ppv       auc
+## 1 0.9714286 0.975 0.9666667 0.98 0.9666667</code></pre>
+<p>This model’s out-of-sample accuracy is lower than that of my logistic regression in part 5, but still relatively high. This is likely because the numeric variables in this model were not centered.</p>
+</div>
+</div>
+
+  </article>
+</section>
+
+
+      </div>
+      
+        <footer class="footer">
+  <section class="container centered">
+    <div class="about">
+    
+    <ul class="social-list">
+      
+        <li class="social-item">
+          <a href="https://github.com/sccampbell02/" aria-label="Github" >
+            
+              <i class="fab fa-github" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="https://twitter.com/ansccampbell/" aria-label="Twitter" >
+            
+              <i class="fab fa-twitter" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="https://www.linkedin.com/in/sarah-campbell-83024a134/" aria-label="LinkedIn" >
+            
+              <i class="fab fa-linkedin" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="/" aria-label="ResearchGate" >
+            
+              <i class="fab fa-researchgate" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="mailto:sarahcsemail@gmail.com" aria-label="Email" >
+            
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+    </ul>
+    
+  
+     © 2019    ·  Powered by <a href="https://gohugo.io/"> Hugo</a> & <a href="https://github.com/naro143/hugo-coder-portfolio">CoderPortfolio</a>. 
+    </div>
+  </section>
+</footer>
+
+      
+    </main>
+
+    
+
+  <script src="/js/app.js"></script>
+  
+  </body>
+</html>

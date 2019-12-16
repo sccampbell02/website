@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Sarah Campbell">
+    <meta name="description" content="/.">
+    <meta name="keywords" content="neuroscience,research,personal">
+
+    <meta property="og:site_name" content="Sarah Campbell">
+    <meta property="og:title" content="
+  Sequence Alignment with Python - Sarah Campbell
+">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/./posts/theme-demo/">
+    <meta property="og:image" content="/.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="/./posts/theme-demo/">
+    <meta name="twitter:image" content="/.">
+
+    <base href="/./posts/theme-demo/">
+    <title>
+  Sequence Alignment with Python - Sarah Campbell
+</title>
+
+    <link rel="canonical" href="/./posts/theme-demo/">
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:400,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/normalize.min.css">
+    <link rel="stylesheet" href="/css/style.min.css">
+
+    
+
+    
+
+    <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+    
+      <link rel="alternate" href="/./index.xml" type="application/rss+xml" title="Sarah Campbell">
+      <link href="/./index.xml" rel="feed" type="application/rss+xml" title="Sarah Campbell" />
+    
+
+    <meta name="generator" content="Hugo 0.61.0" />
+  </head>
+
+  <body class="">
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">Sarah Campbell</a>
+    <input type="checkbox" id="menu-control"/>
+    <label class="menu-mobile  float-right " for="menu-control">
+      <span class="btn-mobile  float-right ">&#9776;</span>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/about">About</a>
+            </li>
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/posts">Blog</a>
+            </li>
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/projects">Projects</a>
+            </li>
+          
+            <li class="navigation-item  align-center ">
+              <a class="navigation-link" href="/CV">CV</a>
+            </li>
+          
+        
+        
+      </ul>
+    </label>
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container post">
+  <article>
+    <header>
+      <h1 class="title">Sequence Alignment with Python</h1>
+      <h2 class="date">December 14, 2019</h2>
+
+      
+        <script type="text/javascript" async
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML-full">
+          MathJax.Hub.Config({
+            tex2jax: {
+              inlineMath: [['$','$']],
+              displayMath: [['$$','$$']],
+              processEscapes: true,
+              processEnvironments: true,
+              skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+              TeX: { extensions: ["AMSmath.js", "AMSsymbols.js"] }
+            }
+          });
+          MathJax.Hub.Queue(function() {
+            
+            
+            
+            var all = MathJax.Hub.getAllJax(), i;
+            for(i = 0; i < all.length; i += 1) {
+                all[i].SourceElement().parentNode.className += ' has-jax';
+            }
+          });
+          </script>
+      
+    </header>
+
+    <p>Nucleotide sequence alignment can be tedious to code by hand, but thanks to services like <a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastSearch&amp;BLAST_SPEC=blast2seq&amp;LINK_LOC=align2seq">BLAST</a> and the Python package biopython, understanding the alignment process is not necessary for producing parsimonious alignments. Even though hand-coding isn't the quickest method, understanding traditional algorithms can clear up how modern programs work and aid in troubleshooting. I'll go over a common global alignment algorithm, the Needleman-Wunsch algorithm.</p>
+<h2 id="needleman-wunsch-algorithm">Needleman-Wunsch algorithm</h2>
+<p>This is a global alignment algorithm, identifying the best alignment after considering each residue within the entire sequence. It is done by completing an alignment matrix of two sequences according to an arbitrary scoring system. I'll walk through an example of doing this on paper.</p>
+<p>Consider the sequences <strong>ATTACCA</strong> and <strong>ATACGA</strong>. Add a &ldquo;gap&rdquo; character (-) to the front of each sequence, and assign each to the first row or column of an alignment matrix:</p>
+
+
+  
+  
+
+
+
+
+
+<div class="portfolio">
+    <div class="portfolio-inner">
+        <div class="portfolio-image"><img src="/images/Presentation1.png" alt=""></div>
+        <div class="portfolio-content">
+            
+        </div>
+	</div>
+</div>
+<p>We will esentially be assigning a numerical score to each of the remaining empty cells that depends on whether the corresponding nucleotides match up. The score will be calculated based on whether there is a match, mismatch, or gap (leaving a gap in one sequence where there is a nucleotide in the other; this will make more sense later on). Let's use a scoring system where a match = +1, mismatch = -1, and gap penalty = -1.</p>
+<p>Start by filling in the intersection of the two gaps with a 0. Then, complete the second row from left to right. Because we are moving horizontally (i.e., matching all values to a gap), these cells all incur the gap penalty. Thus, the value of each cell is 1 less than the cell to its immediate left. Draw an arrow for each cell pointing to the cell from which its value was calculated.</p>
+
+
+  
+  
+
+
+
+
+
+<div class="portfolio">
+    <div class="portfolio-inner">
+        <div class="portfolio-image"><img src="/images/SW2.gif" alt=""></div>
+        <div class="portfolio-content">
+            
+        </div>
+	</div>
+</div>
+<p>Because the gap penalty is also incurred for vertical movement, repeat this process for the second column moving from top to bottom.</p>
+
+
+  
+  
+
+
+
+
+
+<div class="portfolio">
+    <div class="portfolio-inner">
+        <div class="portfolio-image"><img src="/images/Slide7.png" alt=""></div>
+        <div class="portfolio-content">
+            
+        </div>
+	</div>
+</div>
+<p>There are three possible values for each of the remainder of empty cells. This value could be the value of the cell above minus one (vertical movement, so gap penalty), value of the upper left cell plus or minus one, depending on whether the focal cell is an intersection of matching or mismatching nucleotides, or the value of the cell to the left minus one (horizontal movement, so gap penalty). The highest of these three values is recorded.</p>
+<p>Consider the cell in row 3, column 3. This is the intersection of two A's: a match. The cell above is -1, so -2 (-1-(2)) is a possible value. The cell above and to the left is 0, and because our focal cell is a match 1 is a possible value. The cell to the left is -1, so -2 is once again a possible value. 1 is greater than -2, so 1 is the focal cell's value. Draw an arrow from the focal cell to the cell that produced our final value (top left).</p>
+
+
+  
+  
+
+
+
+
+
+<div class="portfolio">
+    <div class="portfolio-inner">
+        <div class="portfolio-image"><img src="/images/SW3.gif" alt=""></div>
+        <div class="portfolio-content">
+            
+        </div>
+	</div>
+</div>
+<p>The process is repeated for the cell in the third column, fourth row. This is the intersection of an A and a T: a mismatch. The cell above is 1, so 0 (1-1) is a possible value. The cell above and to the left is -2, so -3 (-2-(1)) is a possible value due to the mismatch. The cell to the left is -3, so -4 is a possible value. 0 is the greatest of all these values, so we record 0 and draw an arrow from the focal cell to the one above.</p>
+
+
+  
+  
+
+
+
+
+
+<div class="portfolio">
+    <div class="portfolio-inner">
+        <div class="portfolio-image"><img src="/images/SW4.gif" alt=""></div>
+        <div class="portfolio-content">
+            
+        </div>
+	</div>
+</div>
+<p>This process is repeated until the matrix is complete. If two surrounding cells both produce the same focal cell value, and this value is the highest of all possible values, two arrows are drawn.</p>
+
+
+  
+  
+
+
+
+
+
+<div class="portfolio">
+    <div class="portfolio-inner">
+        <div class="portfolio-image"><img src="/images/SW5.gif" alt=""></div>
+        <div class="portfolio-content">
+            
+        </div>
+	</div>
+</div>
+<p>Once all arrows are drawn, start at the bottom right cell and follow the arrows, tracing the path. In this case, the path branches at one point.</p>
+
+
+  
+  
+
+
+
+
+
+<div class="portfolio">
+    <div class="portfolio-inner">
+        <div class="portfolio-image"><img src="/images/SW6.gif" alt=""></div>
+        <div class="portfolio-content">
+            
+        </div>
+	</div>
+</div>
+<p>Skipping the gap intersection, move from top left to bottom right. Whatever two nucleotides intersect along the path are aligned. If the path goes along the horizontal for more than one cell, a gap is inserted in the vertical sequence, and vice versa for vertical movement. There are two possible paths and thus two equally viable alignments.</p>
+
+
+  
+  
+
+
+
+
+
+<div class="portfolio">
+    <div class="portfolio-inner">
+        <div class="portfolio-image"><img src="/images/SW7.gif" alt=""></div>
+        <div class="portfolio-content">
+            
+        </div>
+	</div>
+</div>
+<p>Now to translate this to a Python function. This algorithm requires us to determine whether an intersection is a match, which could be aided by  a match helper function:</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">match_fun</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="p">:</span> <span class="c1"># Helper function to define match/mismatch scores</span>
+ <span class="k">if</span> <span class="n">a</span><span class="o">==</span><span class="n">b</span><span class="p">:</span>
+ <span class="n">score</span><span class="o">=</span><span class="mi">1</span> <span class="c1">#match score</span>
+ <span class="k">else</span><span class="p">:</span>
+ <span class="n">score</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span> <span class="c1">#mismatch score</span>
+ <span class="k">return</span> <span class="n">score</span>
+</code></pre></div><p>Now, to create the main function. As on paper, we'l start by creating an empty array with a length one unit longer than one sequence, and a width one unit longer than the other sequence.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">needleman</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span><span class="n">seq2</span><span class="p">,</span><span class="n">gap_penalty</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="p">:</span> <span class="c1"># Needleman-Wunsch algorithm in a funct</span>
+  <span class="n">m</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">seq1</span><span class="p">)</span> <span class="c1">#length of horizontal sequence</span>
+  <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">seq2</span><span class="p">)</span> <span class="c1">#length of vertical sequence</span>
+  <span class="n">score</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span> <span class="c1">#array to hold scores</span>
+</code></pre></div><p>We'll fill in the initial gap penalty squares, then iterate through the remainder of the cells, calculating the three possible values and settling on the maximum.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">needleman</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span><span class="n">seq2</span><span class="p">,</span><span class="n">gap_penalty</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="p">:</span> <span class="c1"># Needleman-Wunsch algorithm in a function</span>
+  <span class="n">m</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">seq1</span><span class="p">)</span> <span class="c1">#length of horizontal sequence</span>
+  <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">seq2</span><span class="p">)</span> <span class="c1">#length of vertical sequence</span>
+  <span class="n">score</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span> <span class="c1">#array to hold scores</span>
+  <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="p">:</span> <span class="n">score</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">gap_penalty</span> <span class="o">*</span> <span class="n">j</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="p">:</span> <span class="n">score</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gap_penalty</span> <span class="o">*</span> <span class="n">i</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="p">:</span>
+      <span class="n">insert</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">gap_penalty</span>
+      <span class="n">delete</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">gap_penalty</span>
+      <span class="n">match</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">match_fun</span><span class="p">(</span><span class="n">seq1</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="n">seq2</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span>
+      <span class="n">score</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">insert</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">score</span>
+</code></pre></div><p>This returns a matrix much like the one we filled out by hand. For the alignment, we'll create one final function that takes this matrix as an input. Starting at the bottom right hand corner, an if/else statement determines whether the value was determined by a match/mismatch to the diagonal or a gap penalty to the top or left. We then iterate to the chosen cell and repeat. Diagonal movement records an alignment between the sequences, while vertical or horizontal movement inserts a gap in one of the two sequences.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_alignment</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span><span class="n">seq2</span><span class="p">,</span><span class="n">mat</span><span class="p">,</span><span class="n">gap_penalty</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="p">:</span>
+    <span class="n">j</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">seq1</span><span class="p">)</span> <span class="c1">#length of horizontal sequence</span>
+    <span class="n">i</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">seq2</span><span class="p">)</span> <span class="c1">#length of vertical sequence</span>
+    <span class="n">AlignA</span><span class="o">=</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">&#34;</span>   <span class="c1">#empty strings to hold alignments</span>
+    <span class="n">AlignB</span><span class="o">=</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">&#34;</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1">#start at the bottom right corner: if from diagonal, align sequences</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">match_fun</span><span class="p">(</span><span class="n">seq1</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">,</span><span class="n">seq2</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span><span class="p">:</span>
+            <span class="n">AlignA</span> <span class="o">=</span> <span class="n">seq1</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">AlignA</span>
+            <span class="n">AlignB</span> <span class="o">=</span> <span class="n">seq2</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">AlignB</span>
+            <span class="n">i</span> <span class="o">-</span><span class="o">=</span> <span class="mi">1</span>
+            <span class="n">j</span> <span class="o">-</span><span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">gap_penalty</span><span class="p">:</span> <span class="c1">#if from above, put gap in vertical sequence</span>
+            <span class="n">AlignA</span> <span class="o">=</span> <span class="n">seq1</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">AlignA</span>
+            <span class="n">AlignB</span> <span class="o">=</span> <span class="sa"></span><span class="s2">&#34;</span><span class="s2">-</span><span class="s2">&#34;</span> <span class="o">+</span> <span class="n">AlignB</span>
+            <span class="n">j</span> <span class="o">-</span><span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1">#if from the left, put gap in horizontal sequence</span>
+            <span class="n">AlignA</span> <span class="o">=</span> <span class="sa"></span><span class="s2">&#34;</span><span class="s2">-</span><span class="s2">&#34;</span> <span class="o">+</span> <span class="n">AlignA</span>
+            <span class="n">AlignB</span> <span class="o">=</span> <span class="n">seq2</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">AlignB</span>
+            <span class="n">i</span> <span class="o">-</span><span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">AlignA</span><span class="p">,</span> <span class="n">AlignB</span> <span class="c1">#return both alignments</span>
+</code></pre></div><p>Let's try this on two example sequences:</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">s1</span><span class="o">=</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">ACGCTTACCG</span><span class="s2">&#34;</span>
+<span class="n">s2</span><span class="o">=</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">AGCCTACCCC</span><span class="s2">&#34;</span>
+<span class="n">get_alignment</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">,</span><span class="n">needleman</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">)</span><span class="p">)</span>
+</code></pre></div><p><strong>## (&lsquo;ACGCTTA-CCG&rsquo;, &lsquo;A-GCCTACCCC&rsquo;)</strong></p>
+
+  </article>
+
+  <br/>
+
+  
+      <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "yourdiscussshortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  
+  
+</section>
+
+      </div>
+      
+        <footer class="footer">
+  <section class="container centered">
+    <div class="about">
+    
+    <ul class="social-list">
+      
+        <li class="social-item">
+          <a href="https://github.com/sccampbell02/" aria-label="Github" >
+            
+              <i class="fab fa-github" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="https://twitter.com/ansccampbell/" aria-label="Twitter" >
+            
+              <i class="fab fa-twitter" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="https://www.linkedin.com/in/sarah-campbell-83024a134/" aria-label="LinkedIn" >
+            
+              <i class="fab fa-linkedin" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="/" aria-label="ResearchGate" >
+            
+              <i class="fab fa-researchgate" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+        <li class="social-item">
+          <a href="mailto:sarahcsemail@gmail.com" aria-label="Email" >
+            
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+            
+          </a>
+        </li>
+      
+    </ul>
+    
+  
+     © 2019    ·  Powered by <a href="https://gohugo.io/"> Hugo</a> & <a href="https://github.com/naro143/hugo-coder-portfolio">CoderPortfolio</a>. 
+    </div>
+  </section>
+</footer>
+
+      
+    </main>
+
+    
+
+  <script src="/js/app.js"></script>
+  
+  </body>
+</html>

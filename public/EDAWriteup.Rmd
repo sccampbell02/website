@@ -1,0 +1,350 @@
+---
+title: "EDA with Birds"
+author: "Sarah Campbell"
+date: ''
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, fig.width=8,tidy.opts=list(width.cutoff=60),tidy=TRUE)
+ANTI1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/ANTI1.csv")
+ANTI2<-read.csv("~/Documents/Senior/Bioinformatics/EDA/ANTI2.csv")
+CATO1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/CATO1.csv")
+CHOH1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/CHOH1.csv")
+GWMP1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/GWMP1.csv")
+HAFE1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/HAFE1.csv")
+HAFE2<-read.csv("~/Documents/Senior/Bioinformatics/EDA/HAFE2.csv")
+MANA1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/MANA1.csv")
+MANA2<-read.csv("~/Documents/Senior/Bioinformatics/EDA/MANA2.csv")
+MONO1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/MONO1.csv")
+MONO2<-read.csv("~/Documents/Senior/Bioinformatics/EDA/MONO2.csv")
+NACE1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/NACE1.csv")
+PRWI1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/PRWI1.csv")
+ROCR1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/ROCR1.csv")
+WOTR1<-read.csv("~/Documents/Senior/Bioinformatics/EDA/WOTR1.csv")
+taxa<-read.csv("~/Documents/Senior/Bioinformatics/EDA/taxa.csv")
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(chron)
+library(weathermetrics)
+library(RColorBrewer)
+```
+
+*10/20/2019*
+
+# Exploratory Data Analysis: What's Going on with Birds?
+
+## 0. Introduction
+  In this report, I will be examining **NCRN Bird Monitoring Datasets** from 2007-2018. These datasets report sightings of forest (and beginning in 2014, grassland) birds across 11 U.S. national parks in the Naitonal Capital Region, recorded twice per year at every site. Each dataset represents one park's records from 2007-2017, with some parks contributing an additional dataset for 2018. Observations were contributed by Wolf Trap National Park for the Performing Arts (WOTR), Rock Creek Park (ROCR), 
+Prince William Forest Park (PRWI), National Capital Parks-East (NACE), Monocacy National Battlefield (MONO), Manassas National Battlefield Park (MANA), Harpers Ferry National Historical Park (HAFE), George Washington Memorial Parkway (GWMP), Chesapeake and Ohio Canal National Historical Park (CHOH), Catoctin National Park (CATO), and Antietam National Battlefield (ANTI). The variables included in these datasets are as follows:
+
+- Admin_Unit_Code: Four-letter code describing national park of origin.
+
+- Sub_Unit_Code: Four-letter code describing sub-region of origin within a given park.
+
+- Site/Route_Name: Name of site or route monitored.
+
+- Plot_Name: Name of plot within site.
+
+- Location_Type: Forest or grassland.
+
+- Year: Year of survey.
+
+- Date: Exact date of survey.
+
+- Start_Time: Start time of bird survey.
+
+- End_Time: End time of bird survey.
+
+- Observer: Name of observer.
+
+- Visit: Visit number to site within the year of observation (1 or 2).
+
+- Interval_Length: Which of four 2.5-minute survey intervals an observation fell into.
+
+- ID_Method: Attribute used to identify bird.
+
+- Distance: Distance range in which bird was located.
+
+- Flyover_Observed: Whether bird was observed flying over plot.
+
+- Sex: Sex of bird observed.
+
+- Common_Name: Common name of bird observed.
+
+- Scientific_Name: Scientific Name of bird observed.
+
+- AcceptedTSN: Species Taxonomic Serial Number as defined by the USDA Integrated Taxonomic Information System.
+
+- NPSTaxonCode: Species code according to the NPS biodiversity database.
+
+- AOU_Code: American Ornithology Union Code for each species documented.
+
+- PIF_Watchlist_Status: Whether species is member of the Regional and Continental Partners in Flight Watchlist.
+
+- Regional_Stewardship_Status: Whether regional habitat is critical to this species.
+
+- Temperature: Air temperature in degrees Fahrenheit.
+
+- Humidity: Relative humidity at time of survey.
+
+- Sky: Weather conditions at time of survey.
+
+- Wind: Description of wind during survey.
+
+- Disturbance: Whether any disturbances had an effect on observation count.
+
+- Previously_Obs: Whether bird had previously been observed at that site.
+
+- Initial_Three_Min_Cnt: Whether observation was made within first three minutes of survey.
+
+  This data is publicly accessible and provided by the US National Park Service as part of the Inventory and Monitoring Network. The raw data and associated metadata were downloaded via data.gov, a public source for US Government-generated databases. As a student planning to pursue a PhD that is linked to ecology, and a concerned citizen on the subject of preserving biodiversity within the National Parks System, I selected this dataset to investigate changes in these avian populations over time and postulate reasons for any general trends.  
+
+## 1. Joining the Datasets
+
+Because each of the 15 datasets contains the same variable names, and because I want to retain as much data as possible, I perform a full join of all datasets into one ("birds") with a bit of tidying beforehand. The "Sub_Unit_Code" variable type needed to be standardized to character across datasets, and datasets ending in "2" needed to have the truncated "TaxonCode" variable lengthened to the proper "NPSTaxonCode."
+
+It's important that I retain all observations, even duplicates, because each row represents a unique instance of bird observation.
+```{r join, warning=FALSE}
+ANTI1<-transform(ANTI1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+ANTI2<-ANTI2%>%transform(Sub_Unit_Code=as.character(Sub_Unit_Code))%>%rename(NPSTaxonCode=TaxonCode)
+CATO1<-transform(CATO1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+CHOH1<-transform(CHOH1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+GWMP1<-transform(GWMP1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+HAFE1<-transform(HAFE1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+HAFE2<-HAFE2%>%transform(Sub_Unit_Code=as.character(Sub_Unit_Code))%>%rename(NPSTaxonCode=TaxonCode)
+MANA1<-transform(MANA1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+MANA2<-MANA2%>%transform(Sub_Unit_Code=as.character(Sub_Unit_Code))%>%rename(NPSTaxonCode=TaxonCode)
+MONO1<-transform(MONO1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+MONO2<-MONO2%>%transform(Sub_Unit_Code=as.character(Sub_Unit_Code))%>%rename(NPSTaxonCode=TaxonCode)
+NACE1<-transform(NACE1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+PRWI1<-transform(PRWI1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+ROCR1<-transform(ROCR1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+WOTR1<-transform(WOTR1, Sub_Unit_Code=as.character(Sub_Unit_Code))
+
+
+
+birds<-ANTI1%>%full_join(ANTI2, by=NULL)%>%full_join(CATO1, by=NULL)%>%full_join(CHOH1, by=NULL)%>%full_join(GWMP1, by=NULL)%>%full_join(HAFE1, by=NULL)%>%full_join(HAFE2, by=NULL)%>%full_join(MANA1, by=NULL)%>%full_join(MANA2, by=NULL)%>%full_join(MONO1, by=NULL)%>%full_join(MONO2, by=NULL)%>%full_join(NACE1, by=NULL)%>%full_join(PRWI1, by=NULL)%>%full_join(ROCR1, by=NULL)%>%full_join(WOTR1, by=NULL)
+```
+
+## 2.Tidying and Wrangling
+
+### 2a. Tidying 
+
+The dataset is already pretty tidy, but I'll demonstrate use of pivoting by creating a single column for all numeric species ID tags and a separate column for their values.This makes for a too-long dataset, so I reverse it by pivoting wider, drawing names from the ID tag column and values from the ID column.
+
+```{r Pivot}
+glimpse(birds%>%pivot_longer(c(AcceptedTSN,NPSTaxonCode),names_to="ID_type",values_to="ID"))%>%pivot_wider(names_from=ID_type, values_from=ID)
+```
+
+From here, I want to replace any blank values with NAs. I'll then take a look at the dataset by variable to a) ensure that the data is in the best format for analysis, and b) to correct any data entry errors. I'll start with Admin_Unit_Code:
+
+```{r Admin}
+birds<-birds%>%mutate_all(na_if,"")
+birds%>%count(Admin_Unit_Code)
+```
+
+It looks like each unit has one entry, as expected. Moving on to Sub_Unit_Code:
+
+```{r Sub}
+birds%>%count(Sub_Unit_Code)
+```
+ 
+Again, I'm not seeing any repeats. I expect the same from Site_Name, Location_Type, and Year, so to double-check:
+
+```{r Site and Location and Year}
+birds%>%count(Site_Name)
+birds%>%count(Location_Type)
+birds%>%count(Year)
+```
+
+This brings me to date and times, which are currently character values. To make this a more useful value that I can use to plot timepoints and measure length between observations, I'll use the **as.POSIXct** function to convert these to date and time variables. While I'm at it, I'll **mutate** to create an additional time_elapsed variable, showing the length in minutes of each survey.
+
+```{r Date and time}
+birds$Start_Time<-as.POSIXct(paste(birds$Date, birds$Start_Time), format="%m/%d/%y %H:%M")
+birds$End_Time<-as.POSIXct(paste(birds$Date, birds$End_Time), format="%m/%d/%y %H:%M")
+birds$Date<-as.POSIXct(birds$Date, format="%m/%d/%y")
+birds<-birds%>%mutate("time_elapsed"=difftime(End_Time,Start_Time, units="mins"))%>%transform(time_elapsed=as.integer(time_elapsed))
+```
+
+While checking whether observers were repeated, I noticed two possible instances of duplicate names due to misspellings. Using *mutate* and *replace*, I corrected the misspellings.
+
+```{r Observer}
+glimpse(birds%>%count(Observer))
+birds<-birds%>%mutate(Observer=replace(Observer, Observer=="Josh Schlict","Josh Schlicht"))%>%mutate(Observer=replace(Observer, Observer=="Sascha Robinson", "Sasha Robinson"))
+
+
+```
+
+On to Interval_Length. RStudio recognizes this variable as a character, but I want to be able to order these intervals chronologically. To do this, I'll replace these values with quartile number. "1" is the 0-2.5 min interval, "2" is the 2.5-5min interval, "3" is the 5-7.5min interval, and "4" is the 7.5-10min variable.
+
+```{r Interval}
+birds<-birds%>%mutate(Interval_Length=replace(Interval_Length, Interval_Length == "0-2.5 min", 1))%>%mutate(Interval_Length=replace(Interval_Length, Interval_Length == "2.5 - 5 min",2))%>%mutate(Interval_Length=replace(Interval_Length, Interval_Length == "5 - 7.5 min",3))%>%mutate(Interval_Length=replace(Interval_Length, Interval_Length == "7.5 - 10 min",4))
+
+```
+
+The next variable I want to tidy is Scientific_Name. It might be useful to organize birds by genus, so I'll separate the genus and species of the scientific name using *separate*. Some entries were typed in as **Genus** (gen, sp), so I changed the species listing on those to NA.
+
+```{r Genus and Species}
+birds<-birds%>%separate(Scientific_Name,into=c("Genus","Species"),sep=" ")%>%mutate(Species=replace(Species,Species=="(gen,", NA))
+
+
+```
+
+It doesn't look like there are a lot of common genera, so a higher form of organization (i.e., order and family) might come in handy. Luckily, the taxonomic serial number of each species can be found through an ITIS dataset, which includes the taxonomic data I want. I can perform a left join with this dataset by AcceptedTSN, replacing ITIS's "taxonID".
+
+```{r taxa}
+birds<-birds%>%left_join(taxa, by=c("AcceptedTSN"="taxonID"))
+glimpse(birds)
+
+```
+### 2b. Wrangling
+
+Now that I can work with the data, I can put it to some use. For example, it might be interesting to see which observer was most successful at finding birds. One might measure this by finding the highest ratio of birds spotted to days worked. In this case, Kimberly Serno seems to be the champion bird-finder. But one could also say a successful bird-watcher is able to reliably identify species. Looking at the ratio of species NAs (in other words, unidentified species) to total observations for each observer, it seems Kimberley Serno also has a 100% identification rate.
+
+```{r birdfinding}
+birds%>%group_by(Observer)%>%summarize("Avg_Birds_Spotted_Per_Day"=n()/n_distinct(Date),"Percent_Unidentified"=sum(is.na(Species))/n())%>%arrange(desc(Avg_Birds_Spotted_Per_Day))
+```
+
+
+Because this dataset might be useful to see patterns in bird migration, I'll identify which species have enough variability in number of sightings per site per day to warrant further investigation. I start off by creating the summary statistic "Sightings", which indicates the number of times a species was spotted at each site on each day. I then calculate the "Range" of the "Sightings" metric for each species. Nonzero ranges correspond with species could have a change in population over each year, over the course of several years, or between sites. This could be interesting to visualize, so I will save the names of the nonzero-range birds into a vector for filtering later.   
+
+```{r pop change}
+birds3<-birds%>%group_by(Plot_Name,Date,Common_Name)%>%summarize("Sightings"=n())%>%filter(!is.na(Common_Name))
+head(birds3)
+birds4<-birds3%>%group_by(Common_Name)%>%summarize("Range"=max(Sightings)-min(Sightings))%>%arrange(desc(Range))
+head(birds4)
+change_birds<-birds4%>%filter(Range>20)%>%pull(Common_Name)
+```
+
+Taking a look at the other variables I have avaliable, it may be reasonable to ask whether weather is associated with duration of each survey. To look at this, I will calculate the mean visit length in minutes after grouping the dataset by weather type. Taking a look at this variable, there doesn't actually seem to be much weather bias. On average, the observer only surveyed 0.9 minutes more when it was clear vs. when it was raining.
+
+```{r weather}
+birds%>%group_by(Sky)%>%filter(!is.na(Sky))%>%summarize("Avg_Survey_Duration"=mean(time_elapsed, na.rm=T))
+```
+
+Zooming out a bit, I will now create a correlation matrix from certain numeric variables. My numeric ID values are not ordinal and thus would not make sense in a correlation matrix, so I will leave them out of this analysis using *select*. I then drop NAs and scale the dataset before running it through a covariance function (correlation is scaled covariance). Most of these variables, as I would expect, are not correlated with one another, save for "Year" and "time_elapsed", which have a correlation coefficient of -0.48. Observers may, on average, be spending less time observing as the years go on.
+
+```{r weather2}
+birds%>%select(Year,Visit,Temperature,Humidity,time_elapsed)%>%drop_na%>%scale()%>%cov()%>%round(2)
+```
+
+
+Now, I'd like to see if any of the species spotted prefer hotter-feeling or cooler-feeling weather. To achieve this, I'll find the average heat index at which each species is usually spotted with *group_by()* and *summarize()*. I can scale these values to reflect preference for heat or cold. This returns various birds, such as the Ring-Billed Gull, as having a preference for colder-than-average weather, while others, such as the Snowy Egret, have preferences for warmer-than-average weather.
+
+```{r heat}
+birds<-birds%>%mutate("heat_index"= heat.index(t=Temperature, rh=Humidity))
+# average heat index for each species
+head(birds%>%drop_na(heat_index)%>%group_by(Common_Name)%>%summarize(Avg_heat_index=mean(heat_index)))
+
+#scaled average heat index
+head(birds%>%drop_na(heat_index)%>%group_by(Common_Name)%>%summarize(Scaled_heat_index=mean(heat_index))%>%mutate_if(is.numeric,scale))
+
+```
+
+I also have data on which species are on a watchlist and when. This could inform a statistic describing how threatened a species is. To do this, I'll select the columns "Year", "Common_Name", and "PIF_Watchlist_Status",removing any duplicates. I will then group by "Common_Name" and find the sum of watchlist status boolean values. It seems the warblers have spent a particularly long time on the watchlist. I'll also make a vector of bird names that have spent any time on the watchlist at all.
+
+```{r watchlist}
+birds5<-birds%>%select(Year,Common_Name,PIF_Watchlist_Status)%>%distinct()%>%group_by(Common_Name)%>%summarize("Years_on_watchlist"=sum(PIF_Watchlist_Status))%>%arrange(desc(Years_on_watchlist))
+head(birds5)
+endangered_birds<-birds5%>%filter(Years_on_watchlist>0)%>%pull(Common_Name)
+
+```
+
+Last, I want to see if certain species are more likely to be spotted near the beginning of the survey. I'll do this by grouping my dataset by "Common_name" and creating a summary statistic comparing number of observations where "Initial_Three_Min_Cnt" is true to total number of observations. Surprisingly, some species always show up within the first three minutes of observation.
+
+```{r earlybirds}
+head(birds%>%group_by(Common_Name)%>%drop_na(Initial_Three_Min_Cnt)%>%summarize("Early_pct"=sum(Initial_Three_Min_Cnt)/n())%>%arrange(desc(Early_pct)))
+
+```
+
+## 3. Visualization
+
+Now, I'm going to put my subset of "endangered" birds to use. To display which threatened birds the National Capital Region is home to, I created a stacked bar plot representing the total count across all locations of each species on the PIF watchlist.
+
+```{r birdchangeplot}
+birds%>%filter(Common_Name==endangered_birds,Year!=2018)%>%group_by(Year, Common_Name)%>%count%>%ggplot(aes(x=Year))+geom_bar(stat="identity",aes(y=n,fill=Common_Name),position="stack")+labs(fill="Common Name")+ggtitle("Yearly Count of PIF Watchlist Birds Across National Capital Region")+ylab("Number of Observations")+scale_x_continuous(breaks=seq(2007,2017, by=1))+scale_fill_brewer(palette="Paired")+theme_minimal()
+
+```
+
+It seems that the wood thrush makes up a considerable proportion of this locality's threatened bird population (these parks may be a popular location for bird-watchers hoping to see a wood thrush). However, the observed wood thrush population has been decreasing in recent years, which may be an topic of concern for both conservation and tourism in the region. On the contrary, the only species which has become increasingly common is the prairie warbler. While no general trends in total threatened bird population size can be observed here, it may be wise for park staff to examine population dips in 2012 and 2016 to determine their underlying cause.
+
+
+Next, I will take a look at the degree to which weather might affect number of observations for each survey event. Each survey event will be coded by a new variable, "Survey," which is a union of the date and plot of a survey. I will plot the number of observations for eaach of these surveys against I'll also plot the mean number of observations total for each weather condition. I will also color each point according to its "Disturbance" value, or the effect that the observer thought the weather had on the accuracy of the survey. One extreme data point was cut off to allow for proper scaling of the plot. 
+
+```{r weatherplot}
+
+birdsplot<-birds%>%select(Date,Sky,Plot_Name,Disturbance)%>%drop_na()%>%unite("Survey",c(Plot_Name,Date),sep="_")%>%group_by(Disturbance,Sky,Survey)%>%count(Survey)%>%arrange(Survey)
+
+birdsplot$Disturbance <- factor(birdsplot$Disturbance, levels = c("No effect on count","Slight effect on count","Moderate effect on count","Serious effect on count"))
+
+ggplot(birdsplot,aes(x=Sky))+geom_point(aes(y=n, color=Disturbance),position="jitter")+geom_point(stat="summary",fun.y=mean,aes(y=n),size=5,color="orange")+xlab("Weather Conditions")+ylab("Number of Observations")+ggtitle("Number of Observations per Survey Under Different Weather Conditions")+scale_y_continuous(limits=c(0,100))+labs(color="Weather Effect on Count")+theme_dark()+scale_color_brewer(palette="Blues")+theme(plot.title = element_text(hjust = 0.4),axis.text.x = element_text(angle = 30,hjust=1))
+
+```
+
+The observation numbers on poor weather surveys seem to have less spread than the number of observations on clearer day surveys, indicating either that better weather allowed observers to make more observations. The mean value of observations, however, is extremely similar between all conditions, indicating that birds were observable regardless of weather. Supporting this, the proportionality and spread of disturbance variables within each sky condition seem very similar. Perhaps it was not the weather itself, but another factor such as observer comfort affecting the disturbance judgement.
+
+## 4. Principal Component Analysis
+
+In the final segment of this analysis, I will determine meaningful variance relationships between my numeric variables by creating a PCA. As explained above alongside my correlation matrix, this analysis will not include numeric ID codes. I will also create an "Index" identifier that is unique for each observation.
+
+```{r PCA1}
+
+bird_nums1<-birds%>%mutate("Index"=row_number())%>%select(Year,Visit,Temperature,Humidity,time_elapsed,Index)%>%drop_na()
+bird_nums2<-bird_nums1%>%select(-Index)%>%scale()
+rownames(bird_nums2)<-bird_nums1$Index
+bird_pca<-princomp(bird_nums2)
+summary(bird_pca,loadings=T)
+
+```
+
+My first task is to decide how many principal components to keep. Component 4 is the first to achieve a cumulative proportion of variance explained that is greater than 80%, so I will keep principal components 1-4. By interpreting the provided loadings for each component, I can then interpret the meaning behind each PC. These meanings should be taken with a grain of salt, however, given that realistically these variables are probably not incredibly interrelated. Scoring high on pricipal component 1 would mean having a longer survey but in an earlier year and visit, and at cooler temperatures and humidity.This could be seen as the early-month, early-year, short-visit metric. Scoring high on principal component 2 would mean surveying at a later year, but earlier in the year, at a lower temperature, humidity, and a shorter amount of time. It can be seen as the later-year, early/cool-month, short-visit metric. Scoring high on component 3 would mean visiting later in the year, with high temperatures but low humidity. Finally, scoring high on component 4 would mean a later visit with a longer survey that happens at cold temperature and low humidity.
+
+
+```{r PCA2}
+
+ggplot()+geom_point(aes(bird_pca$scores[,1], bird_pca$scores[,2]))+xlab("PC1")+ylab("PC2")
+Name<-bird_nums1$Index
+head(bird_pca$scores%>%as.data.frame%>%cbind(Name,.)%>%top_n(1,Comp.1))
+head(bird_pca$scores%>%as.data.frame%>%cbind(Name,.)%>%top_n(1,wt=desc(Comp.1)))
+bird_nums1%>%filter(Index%in%c(106815,106816,106817))
+bird_nums1%>%filter(Index%in%c(132386,132387,132388))
+
+
+```
+
+
+
+
+I'll start by looking at plot 1, where a few points score high on PC1 and low on PC2. Upon further inspection, these were early-year, late-visit, high-temperature, high-humidity, long-visit observations. This is consistent with a high PC1 score and low PC2 score on all measures but humidity. To confirm, items that scored low on PC1 had the opposite attributes (including a negative time_elapsed, the result of an entry error in the dataset).
+
+
+```{r PCA3}
+ggplot()+geom_point(aes(bird_pca$scores[,1], bird_pca$scores[,3]))+xlab("PC1")+ylab("PC3")
+head(bird_pca$scores%>%as.data.frame%>%cbind(Name,.)%>%top_n(1,Comp.3))
+head(bird_pca$scores%>%as.data.frame%>%cbind(Name,.)%>%top_n(1,wt=desc(Comp.3)))
+
+bird_nums1%>%filter(Index%in%c(115787,115788,115789))
+bird_nums1%>%filter(Index%in%c(38784,38785,38786))
+
+
+```
+
+I will now look at plot 2, where I can view that items score high and low on component 3 when plotted against component 1. High scorers have a high temperature and low humidity metric compared to low scorers, as expected.
+
+
+
+```{r PCA4}
+ggplot()+geom_point(aes(bird_pca$scores[,2], bird_pca$scores[,3]))+xlab("PC2")+ylab("PC3")
+head(bird_pca$scores%>%as.data.frame%>%cbind(Name,.)%>%top_n(1,wt=desc(Comp.2)))
+
+bird_nums1%>%filter(Index%in%c(106815,106816,106817))
+
+
+```
+
+Finally, PCA 3 shows component 2 against component 3. There are a few low scorers along component 2. Opposite of the predicted high scorers on PC2, these points have early year, late visit, high humidity, and high time elapsed.

@@ -1,0 +1,5 @@
+"0","library(knitr)"
+"0","opts_chunk$set(fig.align=""center"", fig.height=5, message=FALSE, warning=FALSE, fig.width=8, tidy.opts=list(width.cutoff=60),tidy=TRUE)"
+"0","library(Stat2Data)"
+"2","Error in library(Stat2Data) : there is no package called ‘Stat2Data’
+"

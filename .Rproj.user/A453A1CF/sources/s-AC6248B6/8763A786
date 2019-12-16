@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1576510681113.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "656338698",
+    "id" : "8763A786",
+    "lastKnownWriteTime" : 1576337274,
+    "last_content_update" : 1576337274,
+    "path" : "~/Desktop/Website2/themes/hugo-coder-portfolio/layouts/_default/single.html",
+    "project_path" : "themes/hugo-coder-portfolio/layouts/_default/single.html",
+    "properties" : {
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "html"
+}

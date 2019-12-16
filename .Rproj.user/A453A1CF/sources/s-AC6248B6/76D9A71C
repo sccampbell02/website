@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1576512270631.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "76D9A71C",
+    "lastKnownWriteTime" : 1576514274,
+    "last_content_update" : 1576514274431,
+    "path" : "~/Desktop/Website2/content/EDAWriteup.Rmd",
+    "project_path" : "content/EDAWriteup.Rmd",
+    "properties" : {
+        "cursorPosition" : "42,4",
+        "scrollLine" : "33"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 12,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

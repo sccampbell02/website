@@ -1,0 +1,11 @@
+<section class="container centered">
+  <div class="about">
+    {{ with .Site.Params.avatarurl }}
+      <div class="avatar"><img src="{{ . | absURL }}" alt="avatar"></div>
+    {{ end }}
+    <h7>{{ .Site.Params.author }}</h7>
+    <br>
+    <h8>{{ .Site.Params.info }}</h8>
+    <br>
+  </div>
+</section>

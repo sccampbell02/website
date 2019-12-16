@@ -1,0 +1,127 @@
+---
+title: "CV"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## EDUCATION
+
+--------------------------------------------------------
+
+**The University of Texas at Austin, Austin, TX** | Expected May 2020  
+
+|    Bachelor of Science and Arts in Neuroscience, Honors
+|    Certificate in Evidence and Inquiry
+|    Current GPA 3.96/4.00
+
+## RESEARCH INTERESTS
+
+--------------------------------------------------------
+
+My primary interests lie in the field of neuroethology, specifically in the molecular basis of social behavior, problem-solving behaviors, and auditory communication. Broadly, my research in this area focuses on how the environment modulates social behavior in various study models. I also have an interest in the effectiveness of narrative-based science communication and the role of science entertainment in conveying pro-science values.
+ 
+## RESEARCH EXPERIENCE
+
+--------------------------------------------------------
+
+**The University of Texas at Austin, Austin, TX** | August 2018 – Present  
+*Research Assistant in the Hofmann Lab under Dr. Hans Hofmann  *  
+
+*	Investigated the neuromolecular basis of social behavior in the cichlid fish Astatotilapia burtoni  
+* Pursued undergraduate research project identifying the effects of early-life social environment on juvenile neural activity, utilizing techniques such as cryosectioning, immunohistochemistry, and microscopy  
+*	Managed lab’s fish facility, ensuring fish health and aquaria adhered to the Institutional Animal Care and Use Committee’s standards
+
+**The University of Texas at Austin, Austin, TX** | January 2018 – August 2018  
+*Research Assistant in the SoundBrain Lab under Dr. Bharath Chandrasekaran  *  
+
+* Collected data for studies characterizing neural signatures of speech and language perception in various contexts using functional neuroimaging techniques including EEG, fNIRS, and eye-tracking
+* Organized and analyzed raw data, troubleshooted neuroimaging technology, directed experimental participants, and trained new research assistants for the lab
+
+**The University of Texas at Austin, Austin, TX** | January 2017 – Present  
+*Mentor and Researcher in the Freshman Research Initiative, Bugs in Bugs Stream  *  
+*Supervisor: Dr. Jo-anne Holley; Principal Investigator: Dr. Nancy Moran  *  
+
+*	Studied abnormal paper wasp behaviors as a result of the laboratory environment, culminating in research manuscript and talk presented to classmates and faculty 
+*	Invited back as peer mentor and researcher in the program, educating students in crucial lab methodologies such as PCR, bacterial culture, dissection techniques, and field collection. Served as primary resource on insect behavior and scientific writing for students
+*	Developed and executed research studying the components of larval diet and its role in developmental plasticity in the wild paper wasp Polistes exclamans via GC/MS analysis
+
+## POSTER PRESENTATIONS 
+
+--------------------------------------------------------
+
+**Undergraduate Research Forum** | May 12, 2019  
+The University of Texas, Austin, TX  
+*Nutritionally Profiling the Social Gut Contents of the Paper Wasp Polistes exclamans  *  
+Poster presentation on work through the Freshman Research Initiative. Proposed methodology for collecting and characterizing the nutritional profile of paper wasp larvae.
+
+## FELLOWSHIPS AND SCHOLARSHIPS
+
+--------------------------------------------------------
+
+**Undergraduate Research Fellowship, The University of Texas at Austin** | October 2018  
+Funding awarded for research through the Freshman Research Initiative.
+
+**Will Rogers Memorial Scholarship** | August 2016  
+Awarded to students studying to work with disabled individuals.
+
+## AWARDS AND HONORS 
+
+--------------------------------------------------------
+
+**Invitee to the Fourth Kavli Symposium in Science Journalism** | February 2018  
+Selected as one of four student note-takers from the University of Texas to attend international meeting of prominent figures in science communication.
+
+**Polymathic Scholars Honors Student** | August 2016 - Present  
+Member of interdisciplinary honors program within the College of Natural Sciences at UT Austin. 
+
+## TEACHING EXPERIENCE
+
+--------------------------------------------------------
+
+**Sanger Learning Center, Austin, TX** | August 2019 – October 2019  
+*Tutor*  
+
+* Tutored UT Austin students in introductory Physics and Genetics courses in a one-on-one setting.
+
+## ACADEMIC AND COMMUNITY SERVICE
+
+--------------------------------------------------------
+
+**The Texas Triple Helix, Austin, TX** | January 2018 - May 2019  
+*Editor*  
+
+* Revised articles for print in a student-run, interdisciplinary research journal which covered the intersection between science, ethics, and society
+
+**Polymathic Scholars Student Panel, Austin, TX** | June 2017 - Present  
+*Member, Treasurer, Chair*  
+
+*	Served as Panel Member from Summer 2017 - Fall 2018, Treasurer from Fall 2018 - Spring 2019, and Chair since Spring 2019 of Polymathic Scholars, an interdisciplinary science honors program at UT
+*	Managed the program’s finances by overseeing budgeting and purchasing
+*	Determined goals for the program through regular meetings with faculty directors
+*	Managed committees of panel members, overseeing all event planning, public relations campaigns, and outreach initiatives
+*	Designed and composed weekly newsletters addressed to all honors program members
+*	Prepared and led discussions focused around skills for collegiate success as a teaching assistant for a first-year seminar in Fall 2018 
+
+**Freshman Research Initiative, Austin, TX** | January 2017 - Present  
+*Outreach Volunteer*  
+
+*	In association with the University of Texas Biodiversity Center and the UT Insect collection, discussed Texas biodiversity, entomology, and native pollinator health with members of the public 
+*	Interacted with audiences of all ages at various events including the San Antonio Livestock Show and Rodeo, UT College of Natural Sciences Family Day, and UT Biodiversity Day
+
+## RELEVANT SKILLS
+
+--------------------------------------------------------
+
+**Programs:** Microsoft Excel, Adobe Illustrator, Adobe Photoshop
+
+**Coding Languages:** R, C++, Python, Fortran, CSS, HTML
+
+**Neuroimaging Techniques:** Operation of EEG, fNIRS, eye-tracking systems
+
+**Molecular Biology:** PCR, cryosectioning, immunohistochemistry, gas chromatography/mass spectrometry
+
+**Other Skills:** Scientific writing, grant writing, and public speaking
+
