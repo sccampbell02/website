@@ -1,7 +1,7 @@
 ---
 description: projects
 slug: projects
-thumbnail: images/tn.png
+thumbnail: images/pro.png
 title: Projects
 ---
 

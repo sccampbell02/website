@@ -1,7 +1,7 @@
 ---
 description: about
 slug: about
-thumbnail: images/tn.png
+thumbnail: fas fa-brain
 title: About me
 ---
 
